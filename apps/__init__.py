@@ -1,0 +1,1 @@
+"""Yakeey domain applications."""

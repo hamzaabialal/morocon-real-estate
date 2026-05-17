@@ -1,0 +1,1 @@
+"""Analytics management command package."""

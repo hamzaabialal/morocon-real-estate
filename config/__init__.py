@@ -1,0 +1,1 @@
+"""Yakeey Django project package."""
