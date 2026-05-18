@@ -16,6 +16,7 @@ app = Celery(
         "celery_tasks.media",
         "celery_tasks.scraper",
         "celery_tasks.social",
+        "celery_tasks.notifications",
     ],
 )
 app.config_from_object("django.conf:settings", namespace="CELERY")
@@ -33,6 +34,20 @@ beat_schedule = {
     "schedule-social-posts-9am": {
         "task": "celery_tasks.social.schedule_social_posts",
         "schedule": crontab(minute=0, hour=9),
+    },
+    "send-weekly-agency-report-monday-9am": {
+        "task": "celery_tasks.notifications.send_weekly_agency_report",
+        "schedule": crontab(minute=0, hour=9, day_of_week="monday"),
+    },
+    "run-sarouty-agencies-monthly": {
+        "task": "celery_tasks.scraper.run_sarouty_agency_scrape",
+        "schedule": crontab(day_of_month=1, hour=1, minute=0),
+        "options": {"timezone": "Africa/Casablanca"},
+    },
+    "run-sarouty-listings-daily": {
+        "task": "celery_tasks.scraper.run_sarouty_listing_discovery",
+        "schedule": crontab(hour=2, minute=0),
+        "options": {"timezone": "Africa/Casablanca"},
     },
 }
 

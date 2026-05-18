@@ -11,12 +11,14 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from apps.agencies.urls import router as agencies_router
 from apps.agencies.urls import urlpatterns as agencies_urlpatterns
 from apps.analytics.urls import router as analytics_router
+from apps.authentication.urls import urlpatterns as authentication_urlpatterns
 from apps.locations.urls import router as locations_router
 from apps.locations.urls import urlpatterns as locations_urlpatterns
 from apps.media_engine.urls import router as media_engine_router
 from apps.notifications.urls import router as notifications_router
 from apps.properties.urls import router as properties_router
 from apps.scraper.urls import router as scraper_router
+from apps.scraper.urls import urlpatterns as scraper_urlpatterns
 from apps.social.urls import router as social_router
 from apps.subscriptions.urls import router as subscriptions_router
 from apps.subscriptions.urls import urlpatterns as subscriptions_urlpatterns
@@ -52,11 +54,13 @@ _MIRRORED_PAGES = [
 ]
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("yakeey-control-panel/", admin.site.urls),
     path("api/v1/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/v1/", include((authentication_urlpatterns, "authentication"))),
     path("api/v1/", include((agencies_urlpatterns, "agencies"))),
     path("api/v1/", include((subscriptions_urlpatterns, "subscriptions"))),
     path("api/v1/", include((locations_urlpatterns, "locations"))),
+    path("api/v1/", include((scraper_urlpatterns, "scraper"))),
     path("api/v1/", include((common_urlpatterns, "common"))),
     path("api/v1/", include(api_router.urls)),
     path("", TemplateView.as_view(template_name="homepage.html")),

@@ -1,96 +1,118 @@
-"""ViewSets for property listing APIs."""
-from decimal import Decimal
+"""High-performance public property marketplace API views."""
+import uuid
 
-from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import F, Q, Sum
-from rest_framework import status
+from django.db.models import F, Q
+from django_filters import rest_framework as filters
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.pagination import CursorPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
-from apps.analytics.models import LeadEvent, PropertyClick, PropertyView
-from apps.analytics.serializers import PropertyClickSerializer
-from apps.analytics.utils import get_client_ip
-from apps.properties.filters import PropertyFilter
+from apps.analytics.models import PropertyClick, PropertyView
+from apps.analytics.utils import create_lead_event, get_client_ip
 from apps.properties.models import Property
-from apps.properties.permissions import IsAgencyUser
-from apps.properties.serializers import PropertyDetailSerializer, PropertyListSerializer
-from apps.social.models import SocialPost
-from apps.social.serializers import SocialPostSerializer
-from apps.subscriptions.models import Payment
+from apps.properties.serializers import PropertySerializer
 
 
-class PropertyViewSet(ModelViewSet):
-    """Property listing endpoints and public tracking actions."""
+class PropertyCursorPagination(CursorPagination):
+    """Cursor pagination for deep marketplace browsing."""
 
-    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+    page_size = 24
+    page_size_query_param = "page_size"
+    max_page_size = 100
+    ordering = "-id"
+
+
+class PropertyFilter(filters.FilterSet):
+    """Frontend marketplace filter matrix."""
+
+    city = filters.CharFilter(method="filter_city")
+    property_type = filters.CharFilter(field_name="property_type", lookup_expr="iexact")
+    transaction_type = filters.CharFilter(
+        field_name="transaction_type", lookup_expr="iexact"
+    )
+    listing_type = filters.CharFilter(field_name="listing_type", lookup_expr="iexact")
+    price_min = filters.NumberFilter(field_name="price", lookup_expr="gte")
+    price_max = filters.NumberFilter(field_name="price", lookup_expr="lte")
+    area_min = filters.NumberFilter(field_name="area", lookup_expr="gte")
+    area_max = filters.NumberFilter(field_name="area", lookup_expr="lte")
+    bedrooms = filters.NumberFilter(field_name="bedrooms", lookup_expr="exact")
+    bathrooms = filters.NumberFilter(field_name="bathrooms", lookup_expr="exact")
+
+    class Meta:
+        model = Property
+        fields = [
+            "city",
+            "property_type",
+            "transaction_type",
+            "listing_type",
+            "price_min",
+            "price_max",
+            "area_min",
+            "area_max",
+            "bedrooms",
+            "bathrooms",
+        ]
+
+    def filter_city(self, queryset, name, value):
+        value = (value or "").strip()
+        if not value:
+            return queryset
+        query = Q(city__slug__iexact=value)
+        try:
+            query |= Q(city_id=uuid.UUID(value))
+        except ValueError:
+            pass
+        return queryset.filter(query)
+
+
+class PropertyViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public search, listing, and detail API for scraped properties."""
+
+    permission_classes = [AllowAny]
+    serializer_class = PropertySerializer
+    pagination_class = PropertyCursorPagination
     filterset_class = PropertyFilter
     search_fields = ["yakeey_ref", "description", "formatted_address", "main_address"]
-    ordering_fields = ["price", "area", "listed_at", "created_at", "views_count"]
-    ordering = ["-listed_at", "-updated_at"]
 
     def get_queryset(self):
-        queryset = (
-            Property.objects.select_related("city", "district", "neighborhood", "agency")
+        return (
+            Property.objects.select_related(
+                "city",
+                "district",
+                "neighborhood",
+                "agency",
+            )
             .prefetch_related("images")
-            .all()
+            .filter(status="LISTED")
+            .order_by("-id")
         )
-        if self.action in {"list", "featured", "similar"}:
-            queryset = queryset.filter(status="LISTED")
-        return queryset
-
-    def get_serializer_class(self):
-        if self.action in {"list", "featured", "similar", "search"}:
-            return PropertyListSerializer
-        return PropertyDetailSerializer
-
-    def get_permissions(self):
-        if self.action in {"create", "partial_update", "update", "boost"}:
-            permission_classes = [IsAgencyUser]
-        elif self.action == "destroy":
-            permission_classes = [IsAdminUser]
-        else:
-            permission_classes = [AllowAny]
-        return [permission() for permission in permission_classes]
-
-    def perform_create(self, serializer):
-        agency = getattr(self.request.user, "agency", None)
-        if agency:
-            serializer.save(agency=agency)
-        else:
-            serializer.save()
-
-    def destroy(self, request, *args, **kwargs):
-        property_obj = self.get_object()
-        property_obj.status = "ARCHIVED"
-        property_obj.save(update_fields=["status", "updated_at"])
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def search(self, request):
-        """Full-text search listings while preserving normal property filters."""
+        """Search listed properties using PostgreSQL full-text search."""
         query = request.query_params.get("q", "").strip()
-        queryset = self.filter_queryset(self.get_queryset().filter(status="LISTED"))
+        queryset = self.filter_queryset(self.get_queryset())
         if query:
             vector = (
                 SearchVector("property_type", weight="A")
                 + SearchVector("description", weight="B")
                 + SearchVector("formatted_address", weight="B")
+                + SearchVector("main_address", weight="B")
             )
             search_query = SearchQuery(query)
             queryset = (
                 queryset.annotate(search=vector, rank=SearchRank(vector, search_query))
                 .filter(search=search_query)
-                .order_by("-rank", "-listed_at", "-updated_at")
+                .order_by("-rank", "-id")
             )
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(self.get_serializer(queryset, many=True).data)
 
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def featured(self, request):
@@ -100,20 +122,17 @@ class PropertyViewSet(ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(self.get_serializer(queryset, many=True).data)
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def similar(self, request, pk=None):
-        """Return similar listings by neighborhood, category, type, or city."""
+        """Return similar listings by location and property shape."""
         property_obj = self.get_object()
         queryset = self.get_queryset().exclude(pk=property_obj.pk)
-
         if property_obj.neighborhood_id:
             queryset = queryset.filter(neighborhood_id=property_obj.neighborhood_id)
         else:
             queryset = queryset.filter(city_id=property_obj.city_id)
-
         queryset = queryset.filter(
             Q(property_category=property_obj.property_category)
             | Q(property_type=property_obj.property_type)
@@ -122,42 +141,11 @@ class PropertyViewSet(ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(self.get_serializer(queryset, many=True).data)
 
-    @action(detail=True, methods=["get"], permission_classes=[AllowAny])
-    def social(self, request, pk=None):
-        """Return social performance for one listing."""
-        property_obj = self.get_object()
-        queryset = SocialPost.objects.filter(property=property_obj).select_related(
-            "property"
-        )
-        totals = queryset.aggregate(
-            total_likes=Sum("likes"),
-            total_views=Sum("views"),
-            total_shares=Sum("shares"),
-        )
-        serializer = SocialPostSerializer(queryset, many=True)
-        return Response(
-            {
-                "summary": {
-                    "likes": totals["total_likes"] or 0,
-                    "views": totals["total_views"] or 0,
-                    "shares": totals["total_shares"] or 0,
-                    "posts_count": queryset.count(),
-                },
-                "posts": serializer.data,
-            }
-        )
-
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[AllowAny],
-        url_path="track-view",
-    )
-    def track_view(self, request, pk=None):
-        """Record a property page view and increment its denormalized counter."""
+    @action(detail=True, methods=["post"], permission_classes=[AllowAny])
+    def view(self, request, pk=None):
+        """Record a public property view."""
         property_obj = self.get_object()
         PropertyView.objects.create(
             property=property_obj,
@@ -171,90 +159,26 @@ class PropertyViewSet(ModelViewSet):
         )
         return Response({"status": "tracked"}, status=status.HTTP_200_OK)
 
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[AllowAny],
-        url_path="track-click",
-    )
-    def track_click(self, request, pk=None):
-        """Record a public contact or engagement click for a property."""
+    @action(detail=True, methods=["post"], permission_classes=[AllowAny])
+    def click(self, request, pk=None):
+        """Record a public contact click."""
         property_obj = self.get_object()
-        serializer = PropertyClickSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        click = PropertyClick.objects.create(
-            property=property_obj,
-            click_type=serializer.validated_data["click_type"],
-            ip_address=get_client_ip(request),
-        )
-        if click.click_type in {"call", "whatsapp", "email"}:
-            LeadEvent.objects.create(
-                property=property_obj,
-                agency=property_obj.agency,
-                phone=property_obj.agent_phone or None,
-                source=click.click_type,
-            )
-        return Response({"status": "tracked"}, status=status.HTTP_200_OK)
-
-    @action(detail=True, methods=["post"], permission_classes=[IsAgencyUser])
-    def boost(self, request, pk=None):
-        """Create a one-time Stripe checkout session to boost a listing."""
-        property_obj = self.get_object()
-        user_agency_id = getattr(request.user, "agency_id", None)
-        if not request.user.is_staff and property_obj.agency_id != user_agency_id:
+        click_type = request.data.get("click_type")
+        if click_type not in {"call", "whatsapp", "email", "share", "website"}:
             return Response(
-                {"error": "You do not own this listing.", "code": "NOT_LISTING_OWNER"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        if not property_obj.agency_id:
-            return Response(
-                {"error": "This listing is not linked to an agency.", "code": "NO_AGENCY"},
+                {"detail": "Invalid click_type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        try:
-            import stripe
-        except ImportError:
-            return Response(
-                {"error": "Stripe SDK is not installed.", "code": "STRIPE_UNAVAILABLE"},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        PropertyClick.objects.create(
+            property=property_obj,
+            click_type=click_type,
+            ip_address=get_client_ip(request),
+        )
+        if click_type in {"call", "whatsapp", "email"}:
+            create_lead_event(
+                property_obj=property_obj,
+                agency=property_obj.agency,
+                phone=property_obj.agent_phone or None,
+                source=click_type,
             )
-
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        session = stripe.checkout.Session.create(
-            mode="payment",
-            customer_email=property_obj.agency.email or getattr(request.user, "email", ""),
-            line_items=[
-                {
-                    "price_data": {
-                        "currency": "mad",
-                        "unit_amount": 20000,
-                        "product_data": {
-                            "name": f"Listing boost {property_obj.yakeey_ref}",
-                        },
-                    },
-                    "quantity": 1,
-                }
-            ],
-            success_url=request.build_absolute_uri(
-                f"/api/v1/properties/{property_obj.id}/"
-            ),
-            cancel_url=request.build_absolute_uri(
-                f"/api/v1/properties/{property_obj.id}/"
-            ),
-            metadata={
-                "type": "listing_boost",
-                "agency_id": str(property_obj.agency_id),
-                "boost_property_id": str(property_obj.id),
-            },
-        )
-        Payment.objects.create(
-            agency=property_obj.agency,
-            amount=Decimal("200.00"),
-            currency="MAD",
-            status="pending",
-            gateway="stripe",
-            gateway_payment_id=session.id,
-            description=f"Listing boost for {property_obj.yakeey_ref}",
-        )
-        return Response({"checkout_url": session.url})
+        return Response({"status": "tracked"}, status=status.HTTP_200_OK)

@@ -1,4 +1,5 @@
 """Base Django settings shared by all Yakeey environments."""
+from datetime import timedelta
 from pathlib import Path
 from urllib.parse import parse_qsl, urlparse
 
@@ -8,7 +9,15 @@ from decouple import Csv, config
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="unsafe-development-secret-key")
-DEBUG = config("DEBUG", default=False, cast=bool)
+
+
+def env_bool(name: str, default: bool = False) -> bool:
+    """Parse flexible boolean-ish environment values."""
+    value = config(name, default=str(default))
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on", "debug"}
+
+
+DEBUG = env_bool("DEBUG", default=False)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1", cast=Csv())
 
 DJANGO_APPS = [
@@ -30,6 +39,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.authentication.apps.AuthenticationConfig",
     "apps.properties.apps.PropertiesConfig",
     "apps.agencies.apps.AgenciesConfig",
     "apps.locations.apps.LocationsConfig",
@@ -162,6 +172,18 @@ REST_FRAMEWORK = {
     },
 }
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "TOKEN_OBTAIN_SERIALIZER": (
+        "apps.authentication.serializers.CustomTokenObtainPairSerializer"
+    ),
+}
+
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS", default="http://localhost:3000", cast=Csv()
 )
@@ -206,6 +228,10 @@ YOUTUBE_CLIENT_ID = config("YOUTUBE_CLIENT_ID", default="")
 YOUTUBE_CLIENT_SECRET = config("YOUTUBE_CLIENT_SECRET", default="")
 YOUTUBE_REFRESH_TOKEN = config("YOUTUBE_REFRESH_TOKEN", default="")
 YOUTUBE_CHANNEL_ID = config("YOUTUBE_CHANNEL_ID", default="")
+
+TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID", default="")
+TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN", default="")
+TWILIO_WHATSAPP_FROM = config("TWILIO_WHATSAPP_FROM", default="whatsapp:+14155238886")
 
 EMAIL_HOST = config("EMAIL_HOST", default="")
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")

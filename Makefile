@@ -1,4 +1,4 @@
-.PHONY: migrate import test shell seed run celery beat scrape match
+.PHONY: migrate import test shell seed run celery beat scrape match agencies sarouty enrich
 
 migrate:
 	python manage.py migrate
@@ -29,3 +29,12 @@ scrape:
 
 match:
 	python manage.py match_agencies
+
+agencies:
+	python manage.py scrape_sarouty_agencies
+
+sarouty:
+	python manage.py scrape_sarouty --start-id=850000 --end-id=950000
+
+enrich:
+	python manage.py enrich_from_yakeey --file=data/Yakeey.parquet
