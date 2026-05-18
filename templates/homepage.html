@@ -1,0 +1,953 @@
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Yakeey — The AI Operating System for Moroccan Real Estate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/"/>
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
+<link rel="stylesheet" href="/assets/styles-BBpK0oL6.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap"/>
+<style>
+.aspect-\[4\/5\] { aspect-ratio: 4 / 5; }
+.aspect-\[3\/4\] { aspect-ratio: 3 / 4; }
+.w-\[200px\] { width: 200px; }
+.w-\[280px\] { width: 280px; }
+</style>
+<script defer src="/assets/yk-api.js"></script>
+<script defer src="/assets/yk-homepage.js"></script>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1292.0" data-gr-ext-installed="" style="cursor: auto;">
+    <mozbar-toolbar data-wxt-shadow-root="" style="--background: oklch(18% .03 165);--foreground: oklch(98.5% .008 80);--card: oklch(22% .04 165);--card-foreground: oklch(98.5% .008 80);--popover: oklch(22% .04 165);--popover-foreground: oklch(98.5% .008 80);--primary: oklch(98.5% .008 80);--primary-foreground: oklch(34% .07 165);--secondary: oklch(26% .04 165);--secondary-foreground: oklch(98.5% .008 80);--muted: oklch(26% .04 165);--muted-foreground: oklch(70% .02 80);--accent: oklch(62% .13 55);--accent-foreground: oklch(100% 0 0);--border: oklch(100% 0 0/.1);--input: oklch(100% 0 0/.12);--ring: oklch(62% .13 55);"></mozbar-toolbar>
+    <!--$-->
+    <div class="bg-background text-foreground">
+        <nav class="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+            <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10"><a class="flex items-center gap-2 active" href="/" data-status="active" aria-current="page">
+                    <div class="grid size-7 place-items-center rounded-sm bg-primary text-primary-foreground font-serif text-sm font-bold">Y</div><span class="font-serif text-xl font-bold tracking-tight text-primary">YAKEEY</span>
+                </a>
+                <div class="hidden items-center gap-10 md:flex"><a href="/properties" class="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground/70 transition-colors hover:text-foreground">Properties</a><a href="/features" class="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground/70 transition-colors hover:text-foreground">AI Core</a><a href="/pricing" class="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground/70 transition-colors hover:text-foreground">Pricing</a><a href="/about" class="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground/70 transition-colors hover:text-foreground">About</a></div>
+                <div class="flex items-center gap-3"><a href="/login" class="hidden text-[11px] font-bold uppercase tracking-[0.18em] text-foreground/70 hover:text-foreground sm:inline">Sign in</a><a href="/signup" class="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent">Request access</a></div>
+            </div>
+        </nav>
+        <section class="relative overflow-hidden">
+            <div class="absolute inset-0 zellige-pattern opacity-40" aria-hidden="true"></div>
+            <div class="mx-auto grid max-w-7xl gap-16 px-6 py-20 lg:grid-cols-12 lg:gap-12 lg:px-10 lg:py-28">
+                <div class="lg:col-span-6 reveal">
+                    <div class="mb-8 inline-flex items-center gap-2 border border-border bg-card px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/70"><span class="size-1.5 rounded-full bg-accent animate-pulse"></span>Version 2.0 · Now serving Casablanca, Marrakech, Tangier</div>
+                    <h1 class="font-serif text-[clamp(2.75rem,6vw,5.5rem)] font-bold leading-[1.02] tracking-tight text-balance text-primary">The Future of <span class="italic text-accent">Moroccan</span> Real Estate.</h1>
+                    <p class="mt-8 max-w-lg text-lg leading-relaxed text-muted-foreground text-pretty">Empower your agency with hyper-local AI insights, automated cinematic listings, and a unified command center that turns every square meter into measurable revenue.</p>
+                    <div class="mt-10 flex flex-wrap items-center gap-3"><a href="/signup" class="inline-flex items-center gap-3 bg-primary px-7 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-foreground transition-colors hover:bg-accent">Request access <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5" aria-hidden="true">
+                                <path d="M5 12h14"></path>
+                                <path d="m12 5 7 7-7 7"></path>
+                            </svg></a><a href="/dashboard" class="inline-flex items-center gap-3 border border-primary/15 bg-card px-7 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-foreground transition-colors hover:border-primary/30">Watch live demo</a></div>
+                    <dl class="mt-14 grid grid-cols-3 gap-6 border-t border-border pt-8 text-left">
+                        <div>
+                            <dt class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Agencies</dt>
+                            <dd class="mt-1 font-serif text-3xl font-bold text-primary" id="yk-hp-agencies">—</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Avg. conv. lift</dt>
+                            <dd class="mt-1 font-serif text-3xl font-bold text-primary">3.4×</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Listings managed</dt>
+                            <dd class="mt-1 font-serif text-3xl font-bold text-primary" id="yk-hp-listings">—</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div style="animation-delay:150ms">
+                    <div class="relative">
+                        <div class="aspect-[4/5] w-full overflow-hidden bg-primary/5 hairline"><img src="/assets/hero-riad-DvN3QbmZ.jpg" alt="Luxury Marrakech riad courtyard" width="1600" height="1024" class="size-full object-cover" /></div>
+                        <div class="absolute -left-6 bottom-10 hidden w-[280px] border border-border bg-card p-5 shadow-2xl shadow-primary/10 sm:block">
+                            <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles size-3" aria-hidden="true">
+                                    <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+                                    <path d="M20 2v4"></path>
+                                    <path d="M22 4h-4"></path>
+                                    <circle cx="4" cy="20" r="2"></circle>
+                                </svg> AI Insight</div>
+                            <p class="mt-3 text-sm leading-snug text-foreground"><span class="font-bold">Villa Anfa Sunset</span> trending +42% in Casablanca. Boost reel spend by 15% to capture peak hours.</p>
+                            <div class="mt-4 h-12">
+                                <div style="width:100%;height:100%;min-width:0">
+                                    <div style="position: relative; cursor: default; width: 100%; height: 100%; max-height: 48px; max-width: 238px;cursor:default;width: 100%;height:48px;max-height:48px;max-width:238px;"><svg width="238" height="48" viewBox="0 0 238 48" style="width: 100%; height: 100%;height:48px;">
+                                            <title></title>
+                                            <desc></desc>
+                                            <defs>
+                                                <clipPath>
+                                                    <rect x="5" y="5" height="38" width="228"></rect>
+                                                </clipPath>
+                                            </defs>
+                                            <defs>
+                                                <linearGradient x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.55"></stop>
+                                                    <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+                                                </linearGradient>
+                                            </defs>
+                                            <g class="recharts-layer recharts-area">
+                                                <g class="recharts-layer">
+                                                    <defs>
+                                                        <clipPath>
+                                                            <rect x="5" y="0" width="228" height="44"></rect>
+                                                        </clipPath>
+                                                    </defs>
+                                                    <g class="recharts-layer" clip-path="url(#animationClipPath-recharts-area-5)">
+                                                        <g class="recharts-layer">
+                                                            <path stroke-width="1.5" fill="url(#hero-area)" width="228" height="38" fill-opacity="0.6" stroke="none" class="recharts-curve recharts-area-area" d="M5,18.724C20.2,19.129,35.4,19.533,50.6,19.826C65.8,20.12,81,20.485,96.2,20.485C111.4,20.485,126.6,20.394,141.8,20.213C157,20.031,172.2,19.419,187.4,18.724C202.6,18.03,217.8,17.038,233,16.045L233,43C217.8,43,202.6,43,187.4,43C172.2,43,157,43,141.8,43C126.6,43,111.4,43,96.2,43C81,43,65.8,43,50.6,43C35.4,43,20.2,43,5,43Z"></path>
+                                                            <path stroke="var(--accent)" stroke-width="1.5" fill="none" width="228" height="38" fill-opacity="0.6" class="recharts-curve recharts-area-curve" d="M5,18.724C20.2,19.129,35.4,19.533,50.6,19.826C65.8,20.12,81,20.485,96.2,20.485C111.4,20.485,126.6,20.394,141.8,20.213C157,20.031,172.2,19.419,187.4,18.724C202.6,18.03,217.8,17.038,233,16.045"></path>
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </svg></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 top-10 hidden w-[200px] border border-border bg-card p-5 shadow-2xl shadow-primary/10 md:block">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/50">Market Pulse</div>
+                            <div class="mt-2 font-serif text-3xl font-bold text-primary">+12.4%</div>
+                            <div class="mt-1 text-xs text-accent">Anfa Supérieur · MoM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="border-y border-border bg-card">
+            <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-y-4 px-6 py-8 text-[10px] font-bold uppercase tracking-[0.32em] text-foreground/40 lg:px-10"><span>Royal Mansour</span><span>Mamounia</span><span>Anfa Realty</span><span>Atlas Capital</span><span>W-Residence</span><span>Signature</span></div>
+        </section>
+        <section class="mx-auto max-w-7xl px-6 py-28 lg:px-10">
+            <div class="mb-14 flex flex-wrap items-end justify-between gap-6">
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">01 · The Engine</div>
+                    <h2 class="mt-3 max-w-2xl font-serif text-4xl font-bold tracking-tight text-primary md:text-5xl text-balance">Intelligence for every listing.</h2>
+                </div>
+                <p class="max-w-md text-muted-foreground">From the medina of Fez to Casablanca Finance City, our AI handles the entire content-to-closing pipeline.</p>
+            </div>
+            <div class="grid auto-rows-[12rem] grid-cols-1 gap-4 md:grid-cols-4 md:auto-rows-[14rem]">
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-border md:col-span-2 md:row-span-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video size-5 text-accent" aria-hidden="true">
+                        <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path>
+                        <rect x="2" y="6" width="14" height="12" rx="2"></rect>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight text-primary">Cinematic Video Generation</h3>
+                    <p class="mt-2 max-w-xs text-sm text-muted-foreground">One-click property reels narrated in Darija, French, and English.</p>
+                    <div class="absolute inset-x-6 bottom-6 grid grid-cols-3 gap-2">
+                        <div class="aspect-[3/4] bg-primary/10 hairline"></div>
+                        <div class="aspect-[3/4] bg-primary/10 hairline"></div>
+                        <div class="aspect-[3/4] bg-primary/10 hairline"></div>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-border "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share2 lucide-share-2 size-5 text-accent" aria-hidden="true">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+                        <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight text-primary">Auto Publishing</h3>
+                    <p class="mt-2 max-w-xs text-sm text-muted-foreground">15+ Moroccan portals &amp; socials in one click.</p>
+                </div>
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-border "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot size-5 text-accent" aria-hidden="true">
+                        <path d="M12 8V4H8"></path>
+                        <rect width="16" height="12" x="4" y="8" rx="2"></rect>
+                        <path d="M2 14h2"></path>
+                        <path d="M20 14h2"></path>
+                        <path d="M15 13v2"></path>
+                        <path d="M9 13v2"></path>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight text-primary">WhatsApp Concierge</h3>
+                    <p class="mt-2 max-w-xs text-sm text-muted-foreground">24/7 qualifying agent in three languages.</p>
+                </div>
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-border md:col-span-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column size-5 text-accent" aria-hidden="true">
+                        <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+                        <path d="M18 17V9"></path>
+                        <path d="M13 17V5"></path>
+                        <path d="M8 17v-3"></path>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight text-primary">Yield Intelligence</h3>
+                    <p class="mt-2 max-w-xs text-sm text-muted-foreground">Predictive pricing for every district.</p>
+                    <div class="absolute inset-x-6 bottom-4 h-16">
+                        <div style="width:100%;height:100%;min-width:0">
+                            <div style="position: relative; cursor: default; width: 100%; height: 100%; max-height: 64px; max-width: 542px;cursor:default;width: 100%;height:64px;max-height:64px;max-width:542px;"><svg width="542" height="64" viewBox="0 0 542 64" style="width: 100%; height: 100%;height:64px;">
+                                    <title></title>
+                                    <desc></desc>
+                                    <defs>
+                                        <clipPath>
+                                            <rect x="5" y="5" height="54" width="532"></rect>
+                                        </clipPath>
+                                    </defs>
+                                    <g class="recharts-layer recharts-bar">
+                                        <g class="recharts-layer recharts-bar-rectangles">
+                                            <g class="recharts-layer">
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="9.433333333333334" y="20.1875" width="35" height="38.8125" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,11.433333333333334,20.1875L="" 42.43333333333334,20.1875A="" 2,2,0,0,1,="" 44.43333333333334,22.1875L="" 44.43333333333334,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="53.766666666666666" y="17.825000000000003" width="35" height="41.175" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,55.766666666666666,17.825000000000003L="" 86.76666666666667,17.825000000000003A="" 2,2,0,0,1,="" 88.76666666666667,19.825000000000003L="" 88.76666666666667,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="98.10000000000001" y="16.475" width="35" height="42.525" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,100.10000000000001,16.475L="" 131.10000000000002,16.475A="" 2,2,0,0,1,="" 133.10000000000002,18.475L="" 133.10000000000002,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="142.43333333333334" y="16.475" width="35" height="42.525" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,144.43333333333334,16.475L="" 175.43333333333334,16.475A="" 2,2,0,0,1,="" 177.43333333333334,18.475L="" 177.43333333333334,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="186.76666666666668" y="17.15" width="35" height="41.85" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,188.76666666666668,17.15L="" 219.76666666666668,17.15A="" 2,2,0,0,1,="" 221.76666666666668,19.15L="" 221.76666666666668,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="231.10000000000002" y="17.825000000000003" width="35" height="41.175" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,233.10000000000002,17.825000000000003L="" 264.1,17.825000000000003A="" 2,2,0,0,1,="" 266.1,19.825000000000003L="" 266.1,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="275.43333333333334" y="18.8375" width="35" height="40.1625" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,277.43333333333334,18.8375L="" 308.43333333333334,18.8375A="" 2,2,0,0,1,="" 310.43333333333334,20.8375L="" 310.43333333333334,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="319.7666666666667" y="18.8375" width="35" height="40.1625" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,321.7666666666667,18.8375L="" 352.7666666666667,18.8375A="" 2,2,0,0,1,="" 354.7666666666667,20.8375L="" 354.7666666666667,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="364.1" y="18.1625" width="35" height="40.8375" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,366.1,18.1625L="" 397.1,18.1625A="" 2,2,0,0,1,="" 399.1,20.1625L="" 399.1,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="408.43333333333334" y="16.475" width="35" height="42.525" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,410.43333333333334,16.475L="" 441.43333333333334,16.475A="" 2,2,0,0,1,="" 443.43333333333334,18.475L="" 443.43333333333334,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="452.7666666666667" y="13.100000000000001" width="35" height="45.9" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,454.7666666666667,13.100000000000001L="" 485.7666666666667,13.100000000000001A="" 2,2,0,0,1,="" 487.7666666666667,15.100000000000001L="" 487.7666666666667,59L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="497.1" y="8.712499999999999" width="35" height="50.2875" radius="2,2,0,0" fill="var(--accent)" class="recharts-rectangle" 2,2,0,0,1,499.1,8.712499999999999L="" 530.1,8.712499999999999A="" 2,2,0,0,1,="" 532.1,10.712499999999999L="" 532.1,59L=""></path>
+                                                </g>
+                                            </g>
+                                        </g>
+                                        <g class="recharts-layer"></g>
+                                    </g>
+                                </svg></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-border "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell size-5 text-accent" aria-hidden="true">
+                        <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
+                        <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight text-primary">Lead Alerts</h3>
+                    <p class="mt-2 max-w-xs text-sm text-muted-foreground">Hot-lead push, scored in real-time.</p>
+                </div>
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-primary/30 md:col-span-2 bg-primary text-primary-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles size-5 text-accent" aria-hidden="true">
+                        <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+                        <path d="M20 2v4"></path>
+                        <path d="M22 4h-4"></path>
+                        <circle cx="4" cy="20" r="2"></circle>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight ">AI Lead Prediction</h3>
+                    <p class="mt-2 max-w-xs text-sm opacity-80">Neural net surfaces ready-to-move buyers before they even contact you.</p>
+                </div>
+                <div class="group relative overflow-hidden border bg-card p-6 transition-colors border-border "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users size-5 text-accent" aria-hidden="true">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                    <h3 class="mt-6 font-serif text-2xl font-bold tracking-tight text-primary">CRM that closes</h3>
+                    <p class="mt-2 max-w-xs text-sm text-muted-foreground">Pipeline scoring &amp; WhatsApp.</p>
+                </div>
+            </div>
+        </section>
+        <section class="border-y border-border bg-card">
+            <div class="mx-auto max-w-7xl px-6 py-28 lg:px-10">
+                <div class="mb-14 text-center">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">02 · The Command Interface</div>
+                    <h2 class="mx-auto mt-3 max-w-2xl font-serif text-4xl font-bold tracking-tight text-primary md:text-5xl text-balance">An operating system, not a dashboard.</h2>
+                </div>
+                <div class="grid gap-4 md:grid-cols-12">
+                    <div class="border border-border bg-background p-6 md:col-span-3">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/50">Active pipeline</div>
+                        <div class="mt-3 font-serif text-3xl font-bold text-primary">MAD 4.2M</div>
+                        <div class="mt-1 text-xs text-accent">+18%</div>
+                    </div>
+                    <div class="border border-border bg-background p-6 md:col-span-3">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/50">AI lead match</div>
+                        <div class="mt-3 font-serif text-3xl font-bold text-primary">84%</div>
+                        <div class="mt-1 text-xs text-accent">+6 pts</div>
+                    </div>
+                    <div class="border border-border bg-background p-6 md:col-span-3">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/50">Live listings</div>
+                        <div class="mt-3 font-serif text-3xl font-bold text-primary">128</div>
+                        <div class="mt-1 text-xs text-accent">+12</div>
+                    </div>
+                    <div class="border border-border bg-background p-6 md:col-span-3">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/50">Social reach</div>
+                        <div class="mt-3 font-serif text-3xl font-bold text-primary">48.5K</div>
+                        <div class="mt-1 text-xs text-accent">Viral</div>
+                    </div>
+                    <div class="border border-border bg-background p-6 md:col-span-8">
+                        <div class="mb-6 flex items-center justify-between">
+                            <div class="text-[11px] font-bold uppercase tracking-[0.22em]">Market Performance</div>
+                            <div class="flex gap-4 text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/60"><span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-primary"></span> Views</span><span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-accent"></span> Leads</span></div>
+                        </div>
+                        <div class="h-64">
+                            <div style="width:100%;height:100%;min-width:0">
+                                <div style="position: relative; cursor: default; width: 100%; height: 100%; max-height: 256px; max-width: 745px;cursor:default;width: 100%;height:256px;max-height:256px;max-width:745px;"><svg width="745" height="256" viewBox="0 0 745 256" style="width: 100%; height: 100%;height:256px;">
+                                        <title></title>
+                                        <desc></desc>
+                                        <defs>
+                                            <clipPath>
+                                                <rect x="0" y="8" height="218" width="733"></rect>
+                                            </clipPath>
+                                        </defs>
+                                        <defs>
+                                            <linearGradient x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.35"></stop>
+                                                <stop offset="100%" stop-color="var(--primary)" stop-opacity="0"></stop>
+                                            </linearGradient>
+                                            <linearGradient x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.45"></stop>
+                                                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+                                            </linearGradient>
+                                        </defs>
+                                        <g class="recharts-cartesian-grid">
+                                            <g class="recharts-cartesian-grid-horizontal">
+                                                <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="8" width="733" height="218" x1="0" y1="226" x2="733" y2="226"></line>
+                                                <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="8" width="733" height="218" x1="0" y1="171.5" x2="733" y2="171.5"></line>
+                                                <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="8" width="733" height="218" x1="0" y1="117" x2="733" y2="117"></line>
+                                                <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="8" width="733" height="218" x1="0" y1="62.5" x2="733" y2="62.5"></line>
+                                                <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="8" width="733" height="218" x1="0" y1="8" x2="733" y2="8"></line>
+                                            </g>
+                                        </g>
+                                        <g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis">
+                                            <g class="recharts-cartesian-axis-ticks">
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="66.63636363636364" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="66.63636363636364" dy="0.71em">Feb</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="133.27272727272728" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="133.27272727272728" dy="0.71em">Mar</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="199.90909090909093" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="199.90909090909093" dy="0.71em">Apr</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="266.54545454545456" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="266.54545454545456" dy="0.71em">May</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="333.1818181818182" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="333.1818181818182" dy="0.71em">Jun</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="399.81818181818187" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="399.81818181818187" dy="0.71em">Jul</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="466.4545454545455" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="466.4545454545455" dy="0.71em">Aug</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="533.0909090909091" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="533.0909090909091" dy="0.71em">Sep</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="599.7272727272727" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="599.7272727272727" dy="0.71em">Oct</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="666.3636363636364" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="666.3636363636364" dy="0.71em">Nov</tspan>
+                                                    </text></g>
+                                                <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="733" height="30" stroke="none" font-size="10" x="733" y="234" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                        <tspan x="733" dy="0.71em">Dec</tspan>
+                                                    </text></g>
+                                            </g>
+                                        </g>
+                                        <g class="recharts-layer recharts-area">
+                                            <g class="recharts-layer">
+                                                <defs>
+                                                    <clipPath>
+                                                        <rect x="0" y="0" width="733" height="227"></rect>
+                                                    </clipPath>
+                                                </defs>
+                                                <g class="recharts-layer" clip-path="url(#animationClipPath-recharts-area-12)">
+                                                    <g class="recharts-layer">
+                                                        <path stroke-width="1.5" fill="url(#g-views)" width="733" height="218" fill-opacity="0.6" stroke="none" class="recharts-curve recharts-area-area" d="M0,138.8C22.212,131.197,44.424,123.595,66.636,116.855C88.848,110.115,111.061,103.532,133.273,98.361C155.485,93.19,177.697,88.817,199.909,85.826C222.121,82.835,244.333,80.412,266.545,80.412C288.758,80.412,310.97,80.751,333.182,81.43C355.394,82.108,377.606,84.797,399.818,86.734C422.03,88.672,444.242,91.373,466.455,93.056C488.667,94.74,510.879,96.835,533.091,96.835C555.303,96.835,577.515,96.314,599.727,95.273C621.939,94.231,644.152,90.719,666.364,86.734C688.576,82.75,710.788,77.058,733,71.365L733,226C710.788,226,688.576,226,666.364,226C644.152,226,621.939,226,599.727,226C577.515,226,555.303,226,533.091,226C510.879,226,488.667,226,466.455,226C444.242,226,422.03,226,399.818,226C377.606,226,355.394,226,333.182,226C310.97,226,288.758,226,266.545,226C244.333,226,222.121,226,199.909,226C177.697,226,155.485,226,133.273,226C111.061,226,88.848,226,66.636,226C44.424,226,22.212,226,0,226Z"></path>
+                                                        <path stroke="var(--primary)" stroke-width="1.5" fill="none" width="733" height="218" fill-opacity="0.6" class="recharts-curve recharts-area-curve" d="M0,138.8C22.212,131.197,44.424,123.595,66.636,116.855C88.848,110.115,111.061,103.532,133.273,98.361C155.485,93.19,177.697,88.817,199.909,85.826C222.121,82.835,244.333,80.412,266.545,80.412C288.758,80.412,310.97,80.751,333.182,81.43C355.394,82.108,377.606,84.797,399.818,86.734C422.03,88.672,444.242,91.373,466.455,93.056C488.667,94.74,510.879,96.835,533.091,96.835C555.303,96.835,577.515,96.314,599.727,95.273C621.939,94.231,644.152,90.719,666.364,86.734C688.576,82.75,710.788,77.058,733,71.365"></path>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                        <g class="recharts-layer recharts-area">
+                                            <g class="recharts-layer">
+                                                <defs>
+                                                    <clipPath>
+                                                        <rect x="0" y="0" width="733" height="227"></rect>
+                                                    </clipPath>
+                                                </defs>
+                                                <g class="recharts-layer" clip-path="url(#animationClipPath-recharts-area-13)">
+                                                    <g class="recharts-layer">
+                                                        <path stroke-width="1.5" fill="url(#g-leads)" width="733" height="218" fill-opacity="0.6" stroke="none" class="recharts-curve recharts-area-area" d="M0,221.822C22.212,221.728,44.424,221.634,66.636,221.567C88.848,221.501,111.061,221.422,133.273,221.422C155.485,221.422,177.697,221.422,199.909,221.422C222.121,221.422,244.333,221.47,266.545,221.495C288.758,221.519,310.97,221.537,333.182,221.567C355.394,221.598,377.606,221.676,399.818,221.676C422.03,221.676,444.242,221.676,466.455,221.676C488.667,221.676,510.879,221.646,533.091,221.604C555.303,221.561,577.515,221.513,599.727,221.422C621.939,221.331,644.152,221.198,666.364,221.059C688.576,220.919,710.788,220.753,733,220.586L733,226C710.788,226,688.576,226,666.364,226C644.152,226,621.939,226,599.727,226C577.515,226,555.303,226,533.091,226C510.879,226,488.667,226,466.455,226C444.242,226,422.03,226,399.818,226C377.606,226,355.394,226,333.182,226C310.97,226,288.758,226,266.545,226C244.333,226,222.121,226,199.909,226C177.697,226,155.485,226,133.273,226C111.061,226,88.848,226,66.636,226C44.424,226,22.212,226,0,226Z"></path>
+                                                        <path stroke="var(--accent)" stroke-width="1.5" fill="none" width="733" height="218" fill-opacity="0.6" class="recharts-curve recharts-area-curve" d="M0,221.822C22.212,221.728,44.424,221.634,66.636,221.567C88.848,221.501,111.061,221.422,133.273,221.422C155.485,221.422,177.697,221.422,199.909,221.422C222.121,221.422,244.333,221.47,266.545,221.495C288.758,221.519,310.97,221.537,333.182,221.567C355.394,221.598,377.606,221.676,399.818,221.676C422.03,221.676,444.242,221.676,466.455,221.676C488.667,221.676,510.879,221.646,533.091,221.604C555.303,221.561,577.515,221.513,599.727,221.422C621.939,221.331,644.152,221.198,666.364,221.059C688.576,220.919,710.788,220.753,733,220.586"></path>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    <div tabindex="-1" style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px; transform: translate(562.326px, 104px);pointer-events:none;position:absolute;top:0px;left:0px;transform:matrix(1, 0, 0, 1, 562.326, 104);">
+                                        <div style="margin: 0px; padding: 10px; background: var(--background); border: 1px solid var(--border); white-space: nowrap; border-radius: 4px; font-size: 12px;padding:10px;background:oklch(0.18 0.03 165) none repeat scroll 0% 0% / auto padding-box border-box;border:0.8px solid oklch(1 0 0 / 0.1);white-space:nowrap;border-radius:4px;font-size:12px;">
+                                            <p style="margin: 0px;">Nov</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-primary p-6 text-primary-foreground md:col-span-4">
+                        <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles size-3" aria-hidden="true">
+                                <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+                                <path d="M20 2v4"></path>
+                                <path d="M22 4h-4"></path>
+                                <circle cx="4" cy="20" r="2"></circle>
+                            </svg> AI Synthesis</div>
+                        <div class="mt-6 space-y-5">
+                            <div class="border-l border-accent/40 pl-4">
+                                <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">Hot Listing</div>
+                                <p class="mt-1 text-sm leading-snug">Villa Anfa price dropped 4%. 3 high-intent buyers in your CRM right now.</p>
+                            </div>
+                            <div class="border-l border-accent/40 pl-4">
+                                <div class="text-[10px] font-bold uppercase tracking-[0.18em] opacity-60">Market Alert</div>
+                                <p class="mt-1 text-sm leading-snug">Tangier apartment demand up 12% — re-evaluate current stock.</p>
+                            </div>
+                            <div class="border-l border-accent/40 pl-4">
+                                <div class="text-[10px] font-bold uppercase tracking-[0.18em] opacity-60">Content</div>
+                                <p class="mt-1 text-sm leading-snug">Riad Marrakech reel ready. 84% predicted engagement.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="mx-auto max-w-7xl px-6 py-28 lg:px-10">
+            <div class="mb-14 flex flex-wrap items-end justify-between gap-6">
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">03 · The Portfolio</div>
+                    <h2 class="mt-3 max-w-2xl font-serif text-4xl font-bold tracking-tight text-primary md:text-5xl text-balance">Curated, verified, ready.</h2>
+                </div><a href="/properties" class="text-[11px] font-bold uppercase tracking-[0.22em] text-accent hover:text-primary">Explore all listings →</a>
+            </div>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"><a href="/properties/lv-992" class="group block bg-card hairline transition-all duration-500 hover:-translate-y-1">
+                    <div class="relative aspect-[4/5] overflow-hidden"><img src="/assets/property-1-BF0RFkF4.jpg" alt="Villa Anfa Sunset" loading="lazy" class="size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/0 to-primary/0"></div>
+                        <div class="absolute left-3 top-3 flex gap-2"><span class="bg-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">AI
+                                <!-- -->
+                            </span><span class="inline-flex items-center gap-1 bg-background/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check size-3 text-accent" aria-hidden="true">
+                                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                    <path d="m9 12 2 2 4-4"></path>
+                                </svg> Verified</span></div><button type="button" class="absolute right-3 top-3 grid size-9 place-items-center bg-background/95 text-foreground/70 transition-colors hover:text-accent" aria-label="Favorite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart size-4" aria-hidden="true">
+                                <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path>
+                            </svg></button>
+                        <div class="absolute inset-x-0 bottom-0 p-5 text-sand">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] opacity-80">Anfa Supérieur
+                                <!-- -->
+                                <!-- -->
+                            </div>
+                            <div class="mt-1 font-serif text-xl font-bold leading-tight">Villa Anfa Sunset</div>
+                            <div class="mt-1 text-base font-semibold">12.400.000 MAD</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-border px-5 py-4 text-xs text-muted-foreground"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed-double size-3.5" aria-hidden="true">
+                                <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path>
+                                <path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path>
+                                <path d="M12 4v6"></path>
+                                <path d="M2 18h20"></path>
+                            </svg> <!-- --></span><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bath size-3.5" aria-hidden="true">
+                                <path d="M10 4 8 6"></path>
+                                <path d="M17 19v2"></path>
+                                <path d="M2 12h20"></path>
+                                <path d="M7 19v2"></path>
+                                <path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                            </svg> <!-- --></span><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2 lucide-maximize-2 size-3.5" aria-hidden="true">
+                                <path d="M15 3h6v6"></path>
+                                <path d="m21 3-7 7"></path>
+                                <path d="m3 21 7-7"></path>
+                                <path d="M9 21H3v-6"></path>
+                            </svg> <!-- -->
+                            <!-- -->
+                        </span><span class="font-bold text-foreground/80">Villa</span></div>
+                </a><a href="/properties/rm-104" class="group block bg-card hairline transition-all duration-500 hover:-translate-y-1">
+                    <div class="relative aspect-[4/5] overflow-hidden"><img src="/assets/property-2-BdNA2aYD.jpg" alt="Riad Marrakech Soul" loading="lazy" class="size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/0 to-primary/0"></div>
+                        <div class="absolute left-3 top-3 flex gap-2"><span class="bg-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">AI
+                                <!-- -->
+                            </span><span class="inline-flex items-center gap-1 bg-background/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check size-3 text-accent" aria-hidden="true">
+                                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                    <path d="m9 12 2 2 4-4"></path>
+                                </svg> Verified</span></div><button type="button" class="absolute right-3 top-3 grid size-9 place-items-center bg-background/95 text-foreground/70 transition-colors hover:text-accent" aria-label="Favorite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart size-4" aria-hidden="true">
+                                <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path>
+                            </svg></button>
+                        <div class="absolute inset-x-0 bottom-0 p-5 text-sand">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] opacity-80">Medina
+                                <!-- -->
+                                <!-- -->
+                            </div>
+                            <div class="mt-1 font-serif text-xl font-bold leading-tight">Riad Marrakech Soul</div>
+                            <div class="mt-1 text-base font-semibold">6.800.000 MAD</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-border px-5 py-4 text-xs text-muted-foreground"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed-double size-3.5" aria-hidden="true">
+                                <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path>
+                                <path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path>
+                                <path d="M12 4v6"></path>
+                                <path d="M2 18h20"></path>
+                            </svg> <!-- --></span><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bath size-3.5" aria-hidden="true">
+                                <path d="M10 4 8 6"></path>
+                                <path d="M17 19v2"></path>
+                                <path d="M2 12h20"></path>
+                                <path d="M7 19v2"></path>
+                                <path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                            </svg> <!-- --></span><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2 lucide-maximize-2 size-3.5" aria-hidden="true">
+                                <path d="M15 3h6v6"></path>
+                                <path d="m21 3-7 7"></path>
+                                <path d="m3 21 7-7"></path>
+                                <path d="M9 21H3v-6"></path>
+                            </svg> <!-- -->
+                            <!-- -->
+                        </span><span class="font-bold text-foreground/80">Riad</span></div>
+                </a><a href="/properties/tg-558" class="group block bg-card hairline transition-all duration-500 hover:-translate-y-1">
+                    <div class="relative aspect-[4/5] overflow-hidden"><img src="/assets/property-3-B-fIDnYp.jpg" alt="Tangier Bay Penthouse" loading="lazy" class="size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/0 to-primary/0"></div>
+                        <div class="absolute left-3 top-3 flex gap-2"><span class="bg-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">AI
+                                <!-- -->
+                            </span><span class="inline-flex items-center gap-1 bg-background/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check size-3 text-accent" aria-hidden="true">
+                                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                    <path d="m9 12 2 2 4-4"></path>
+                                </svg> Verified</span></div><button type="button" class="absolute right-3 top-3 grid size-9 place-items-center bg-background/95 text-foreground/70 transition-colors hover:text-accent" aria-label="Favorite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart size-4" aria-hidden="true">
+                                <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path>
+                            </svg></button>
+                        <div class="absolute inset-x-0 bottom-0 p-5 text-sand">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] opacity-80">Marina Bay
+                                <!-- -->
+                                <!-- -->
+                            </div>
+                            <div class="mt-1 font-serif text-xl font-bold leading-tight">Tangier Bay Penthouse</div>
+                            <div class="mt-1 text-base font-semibold">9.200.000 MAD</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-border px-5 py-4 text-xs text-muted-foreground"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed-double size-3.5" aria-hidden="true">
+                                <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path>
+                                <path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path>
+                                <path d="M12 4v6"></path>
+                                <path d="M2 18h20"></path>
+                            </svg> <!-- --></span><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bath size-3.5" aria-hidden="true">
+                                <path d="M10 4 8 6"></path>
+                                <path d="M17 19v2"></path>
+                                <path d="M2 12h20"></path>
+                                <path d="M7 19v2"></path>
+                                <path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
+                            </svg> <!-- --></span><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2 lucide-maximize-2 size-3.5" aria-hidden="true">
+                                <path d="M15 3h6v6"></path>
+                                <path d="m21 3-7 7"></path>
+                                <path d="m3 21 7-7"></path>
+                                <path d="M9 21H3v-6"></path>
+                            </svg> <!-- -->
+                            <!-- -->
+                        </span><span class="font-bold text-foreground/80">Penthouse</span></div>
+                </a></div>
+        </section>
+        <section class="border-y border-border bg-card">
+            <div class="mx-auto grid max-w-7xl gap-12 px-6 py-28 lg:grid-cols-2 lg:px-10">
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">04 · Channels</div>
+                    <h2 class="mt-3 max-w-md font-serif text-4xl font-bold tracking-tight text-primary md:text-5xl text-balance">One studio. Every channel.</h2>
+                    <p class="mt-6 max-w-md text-muted-foreground">We publish to Instagram, TikTok, Mubawab, Avito, Sarouty, Selektimmo, Facebook Marketplace and your own site — with culturally-aware captions.</p>
+                    <div class="mt-10 grid grid-cols-2 gap-4">
+                        <div class="border border-border bg-background p-5">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/50">Instagram</div>
+                            <div class="mt-2 font-serif text-3xl font-bold text-primary">38
+                                <!-- -->
+                            </div>
+                            <div class="mt-3 h-1 w-full bg-muted">
+                                <div style="width:98.8%"></div>
+                            </div>
+                        </div>
+                        <div class="border border-border bg-background p-5">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/50">TikTok</div>
+                            <div class="mt-2 font-serif text-3xl font-bold text-primary">24
+                                <!-- -->
+                            </div>
+                            <div class="mt-3 h-1 w-full bg-muted">
+                                <div style="width:62.400000000000006%"></div>
+                            </div>
+                        </div>
+                        <div class="border border-border bg-background p-5">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/50">Mubawab</div>
+                            <div class="mt-2 font-serif text-3xl font-bold text-primary">18
+                                <!-- -->
+                            </div>
+                            <div class="mt-3 h-1 w-full bg-muted">
+                                <div style="width:46.800000000000004%"></div>
+                            </div>
+                        </div>
+                        <div class="border border-border bg-background p-5">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/50">Avito</div>
+                            <div class="mt-2 font-serif text-3xl font-bold text-primary">12
+                                <!-- -->
+                            </div>
+                            <div class="mt-3 h-1 w-full bg-muted">
+                                <div style="width:31.200000000000003%"></div>
+                            </div>
+                        </div>
+                        <div class="border border-border bg-background p-5">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/50">Direct</div>
+                            <div class="mt-2 font-serif text-3xl font-bold text-primary">8
+                                <!-- -->
+                            </div>
+                            <div class="mt-3 h-1 w-full bg-muted">
+                                <div style="width:20.8%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-border bg-background p-8">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-foreground/50">Engagement by channel</div>
+                    <div class="mt-6 h-80">
+                        <div style="width:100%;height:100%;min-width:0">
+                            <div style="position: relative; cursor: default; width: 100%; height: 100%; max-height: 320px; max-width: 510px;cursor:default;width: 100%;height:320px;max-height:320px;max-width:510px;"><svg width="510" height="320" viewBox="0 0 510 320" style="width: 100%; height: 100%;height:320px;">
+                                    <title></title>
+                                    <desc></desc>
+                                    <defs>
+                                        <clipPath>
+                                            <rect x="0" y="0" height="290" width="502"></rect>
+                                        </clipPath>
+                                    </defs>
+                                    <g class="recharts-cartesian-grid">
+                                        <g class="recharts-cartesian-grid-horizontal">
+                                            <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="0" width="502" height="290" x1="0" y1="290" x2="502" y2="290"></line>
+                                            <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="0" width="502" height="290" x1="0" y1="217.5" x2="502" y2="217.5"></line>
+                                            <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="0" width="502" height="290" x1="0" y1="145" x2="502" y2="145"></line>
+                                            <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="0" width="502" height="290" x1="0" y1="72.5" x2="502" y2="72.5"></line>
+                                            <line stroke="var(--border)" stroke-dasharray="2 4" fill="none" x="0" y="0" width="502" height="290" x1="0" y1="0" x2="502" y2="0"></line>
+                                        </g>
+                                    </g>
+                                    <g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis">
+                                        <g class="recharts-cartesian-axis-ticks">
+                                            <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="502" height="30" stroke="none" font-size="10" x="50.2" y="298" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                    <tspan x="50.2" dy="0.71em">Instagram</tspan>
+                                                </text></g>
+                                            <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="502" height="30" stroke="none" font-size="10" x="150.60000000000002" y="298" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                    <tspan x="150.60000000000002" dy="0.71em">TikTok</tspan>
+                                                </text></g>
+                                            <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="502" height="30" stroke="none" font-size="10" x="251" y="298" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                    <tspan x="251" dy="0.71em">Mubawab</tspan>
+                                                </text></g>
+                                            <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="502" height="30" stroke="none" font-size="10" x="351.40000000000003" y="298" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                    <tspan x="351.40000000000003" dy="0.71em">Avito</tspan>
+                                                </text></g>
+                                            <g class="recharts-layer recharts-cartesian-axis-tick"><text orientation="bottom" width="502" height="30" stroke="none" font-size="10" x="451.8" y="298" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="var(--muted-foreground)">
+                                                    <tspan x="451.8" dy="0.71em">Direct</tspan>
+                                                </text></g>
+                                        </g>
+                                    </g>
+                                    <g class="recharts-layer recharts-bar">
+                                        <g class="recharts-layer recharts-bar-rectangles">
+                                            <g class="recharts-layer">
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="10.04" y="14.5" width="80" height="275.5" radius="2,2,0,0" fill="var(--accent)" name="Instagram" class="recharts-rectangle" 2,2,0,0,1,12.04,14.5L="" 88.03999999999999,14.5A="" 2,2,0,0,1,="" 90.03999999999999,16.5L="" 90.03999999999999,290L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="110.44" y="116" width="80" height="174" radius="2,2,0,0" fill="var(--accent)" name="TikTok" class="recharts-rectangle" 2,2,0,0,1,112.44,116L="" 188.44,116A="" 2,2,0,0,1,="" 190.44,118L="" 190.44,290L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="210.84" y="159.5" width="80" height="130.5" radius="2,2,0,0" fill="var(--accent)" name="Mubawab" class="recharts-rectangle" 2,2,0,0,1,212.84,159.5L="" 288.84000000000003,159.5A="" 2,2,0,0,1,="" 290.84000000000003,161.5L="" 290.84000000000003,290L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="311.24000000000007" y="203" width="80" height="87" radius="2,2,0,0" fill="var(--accent)" name="Avito" class="recharts-rectangle" 2,2,0,0,1,313.24000000000007,203L="" 389.24000000000007,203A="" 2,2,0,0,1,="" 391.24000000000007,205L="" 391.24000000000007,290L=""></path>
+                                                </g>
+                                                <g class="recharts-layer recharts-bar-rectangle">
+                                                    <path x="411.64000000000004" y="232" width="80" height="58" radius="2,2,0,0" fill="var(--accent)" name="Direct" class="recharts-rectangle" 2,2,0,0,1,413.64000000000004,232L="" 489.64000000000004,232A="" 2,2,0,0,1,="" 491.64000000000004,234L="" 491.64000000000004,290L=""></path>
+                                                </g>
+                                            </g>
+                                        </g>
+                                        <g class="recharts-layer"></g>
+                                    </g>
+                                </svg>
+                                <div tabindex="-1" style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px; transform: translate(372.138px, 217px);pointer-events:none;position:absolute;top:0px;left:0px;transform:matrix(1, 0, 0, 1, 372.138, 217);">
+                                    <div style="margin: 0px; padding: 10px; background: var(--background); border: 1px solid var(--border); white-space: nowrap; border-radius: 4px; font-size: 12px;padding:10px;background:oklch(0.18 0.03 165) none repeat scroll 0% 0% / auto padding-box border-box;border:0.8px solid oklch(1 0 0 / 0.1);white-space:nowrap;border-radius:4px;font-size:12px;">
+                                        <p style="margin: 0px;">Direct</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="mx-auto max-w-7xl px-6 py-28 lg:px-10">
+            <div class="mb-14 text-center">
+                <div class="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">05 · Pricing</div>
+                <h2 class="mx-auto mt-3 max-w-2xl font-serif text-4xl font-bold tracking-tight text-primary md:text-5xl text-balance">Built for every brokerage in the Kingdom.</h2>
+            </div>
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
+                <div class="relative border p-8 border-border bg-card">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] opacity-60">Discover</div>
+                    <div class="mt-6 flex items-baseline gap-2"><span class="font-serif text-5xl font-bold">0</span><span class="text-sm opacity-70">free
+                            <!-- -->
+                        </span></div>
+                    <ul class="mt-8 space-y-3 text-sm">
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                    </ul><a href="/signup" class="mt-10 inline-flex w-full items-center justify-center py-3 text-[11px] font-bold uppercase tracking-[0.22em] bg-primary text-primary-foreground">Choose
+                        <!-- -->
+                    </a>
+                </div>
+                <div class="relative border p-8 border-border bg-card">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] opacity-60">Growth</div>
+                    <div class="mt-6 flex items-baseline gap-2"><span class="font-serif text-5xl font-bold">990</span><span class="text-sm opacity-70">/mo
+                            <!-- -->
+                        </span></div>
+                    <ul class="mt-8 space-y-3 text-sm">
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                    </ul><a href="/signup" class="mt-10 inline-flex w-full items-center justify-center py-3 text-[11px] font-bold uppercase tracking-[0.22em] bg-primary text-primary-foreground">Choose
+                        <!-- -->
+                    </a>
+                </div>
+                <div class="relative border p-8 border-accent bg-primary text-primary-foreground">
+                    <div class="absolute -top-3 left-8 bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white">Most chosen</div>
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] opacity-60">Agency Pro</div>
+                    <div class="mt-6 flex items-baseline gap-2"><span class="font-serif text-5xl font-bold">2,490</span><span class="text-sm opacity-70">/mo
+                            <!-- -->
+                        </span></div>
+                    <ul class="mt-8 space-y-3 text-sm">
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                    </ul><a href="/signup" class="mt-10 inline-flex w-full items-center justify-center py-3 text-[11px] font-bold uppercase tracking-[0.22em] bg-accent text-white">Choose
+                        <!-- -->
+                    </a>
+                </div>
+                <div class="relative border p-8 border-border bg-card">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.22em] opacity-60">Enterprise</div>
+                    <div class="mt-6 flex items-baseline gap-2"><span class="font-serif text-5xl font-bold">Custom</span><span class="text-sm opacity-70"> MAD</span></div>
+                    <ul class="mt-8 space-y-3 text-sm">
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                        <li class="flex items-start gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check mt-0.5 size-3.5 shrink-0 text-accent" aria-hidden="true">
+                                <path d="M20 6 9 17l-5-5"></path>
+                            </svg> <!-- -->
+                        </li>
+                    </ul><a href="/signup" class="mt-10 inline-flex w-full items-center justify-center py-3 text-[11px] font-bold uppercase tracking-[0.22em] bg-primary text-primary-foreground">Choose
+                        <!-- -->
+                    </a>
+                </div>
+            </div>
+        </section>
+        <section class="border-y border-border bg-card">
+            <div class="mx-auto max-w-7xl px-6 py-28 lg:px-10">
+                <div class="grid gap-10 lg:grid-cols-3">
+                    <figure class="border border-border bg-background p-8">
+                        <div class="flex gap-1 text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg></div>
+                        <blockquote class="mt-6 font-serif text-xl leading-snug text-primary">"
+                            <!-- -->
+                            <!-- -->
+                        </blockquote>
+                        <figcaption class="mt-8 flex items-center gap-3 border-t border-border pt-6">
+                            <div class="grid size-10 place-items-center rounded-full bg-accent/15 text-[11px] font-bold text-accent">YT</div>
+                            <div class="text-xs">
+                                <div class="font-bold text-foreground">Yasmine Tazi</div>
+                                <div class="text-muted-foreground">Founder, Anfa Realty</div>
+                            </div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check ml-auto size-4 text-accent" aria-hidden="true">
+                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                        </figcaption>
+                    </figure>
+                    <figure class="border border-border bg-background p-8">
+                        <div class="flex gap-1 text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg></div>
+                        <blockquote class="mt-6 font-serif text-xl leading-snug text-primary">"
+                            <!-- -->
+                            <!-- -->
+                        </blockquote>
+                        <figcaption class="mt-8 flex items-center gap-3 border-t border-border pt-6">
+                            <div class="grid size-10 place-items-center rounded-full bg-accent/15 text-[11px] font-bold text-accent">HB</div>
+                            <div class="text-xs">
+                                <div class="font-bold text-foreground">Hicham Berrada</div>
+                                <div class="text-muted-foreground">Director, Atlas Capital</div>
+                            </div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check ml-auto size-4 text-accent" aria-hidden="true">
+                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                        </figcaption>
+                    </figure>
+                    <figure class="border border-border bg-background p-8">
+                        <div class="flex gap-1 text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star size-4 fill-current" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg></div>
+                        <blockquote class="mt-6 font-serif text-xl leading-snug text-primary">"
+                            <!-- -->
+                            <!-- -->
+                        </blockquote>
+                        <figcaption class="mt-8 flex items-center gap-3 border-t border-border pt-6">
+                            <div class="grid size-10 place-items-center rounded-full bg-accent/15 text-[11px] font-bold text-accent">SC</div>
+                            <div class="text-xs">
+                                <div class="font-bold text-foreground">Salma Cherkaoui</div>
+                                <div class="text-muted-foreground">Broker, Royal Mansour Estates</div>
+                            </div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check ml-auto size-4 text-accent" aria-hidden="true">
+                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+        <section class="mx-auto max-w-7xl px-6 py-32 text-center lg:px-10"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-earth mx-auto size-8 text-accent" aria-hidden="true">
+                <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"></path>
+                <path d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"></path>
+                <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"></path>
+                <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            <h2 class="mx-auto mt-6 max-w-3xl font-serif text-5xl font-bold leading-[1.05] tracking-tight text-primary md:text-7xl text-balance">Operate Moroccan real estate at the speed of <em class="italic text-accent">intelligence.</em></h2>
+            <p class="mx-auto mt-8 max-w-lg text-muted-foreground">Onboard your agency in under 12 minutes. Sovereign infrastructure. CNDP compliant. Built in Casablanca.</p>
+            <div class="mt-12 flex flex-wrap items-center justify-center gap-4"><a href="/signup" class="inline-flex items-center gap-3 bg-primary px-8 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-foreground hover:bg-accent">Start free trial <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5" aria-hidden="true">
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg></a><a href="/pricing" class="inline-flex items-center gap-3 border border-border bg-card px-8 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-foreground hover:border-primary/30">Compare plans</a></div>
+            <p class="mt-6 text-xs text-muted-foreground"><span id="yk-hp-footer-listings">—</span> listings on the platform · No credit card required</p>
+        </section>
+        <footer class="border-t border-border bg-background">
+            <div class="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+                <div class="grid gap-16 lg:grid-cols-[1.5fr_3fr]">
+                    <div>
+                        <div class="font-serif text-3xl font-bold tracking-tight text-primary">Yakeey<span class="text-accent">.</span></div>
+                        <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">The sovereign real estate intelligence platform for the Kingdom of Morocco. Built in Casablanca, for the world.</p>
+                        <div class="mt-8 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"><span class="size-1.5 rounded-full bg-accent"></span>All systems operational</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-10 sm:grid-cols-4">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Platform</div>
+                            <ul class="mt-5 space-y-3 text-sm">
+                                <li><a href="/features" class="text-foreground/80 hover:text-accent">AI Studio</a></li>
+                                <li><a href="/properties" class="text-foreground/80 hover:text-accent">Listings</a></li>
+                                <li><a href="/map" class="text-foreground/80 hover:text-accent">Map</a></li>
+                                <li><a href="/pricing" class="text-foreground/80 hover:text-accent">Pricing</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Agency</div>
+                            <ul class="mt-5 space-y-3 text-sm">
+                                <li><a href="/dashboard" class="text-foreground/80 hover:text-accent">Dashboard</a></li>
+                                <li><a href="/dashboard/analytics" class="text-foreground/80 hover:text-accent">Analytics</a></li>
+                                <li><a href="/dashboard/leads" class="text-foreground/80 hover:text-accent">Leads</a></li>
+                                <li><a href="/dashboard/billing" class="text-foreground/80 hover:text-accent">Billing</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Company</div>
+                            <ul class="mt-5 space-y-3 text-sm">
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">About</a></li>
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">Newsroom</a></li>
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">Contact</a></li>
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">Careers</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50">Legal</div>
+                            <ul class="mt-5 space-y-3 text-sm">
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">CNDP</a></li>
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">Terms</a></li>
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">Privacy</a></li>
+                                <li><a href="/about" class="text-foreground/80 hover:text-accent">Security</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-20 flex flex-col items-start justify-between gap-4 border-t border-border pt-8 text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:flex-row sm:items-center"><span>© 2026 Yakeey Technologies SARL · Casablanca</span><span>Built with sovereign AI · MAD denominated</span></div>
+            </div>
+        </footer>
+    </div>
+    <!--/$-->
+    <aside role="complementary" dir="ltr" lang="en" aria-label="Edit with Lovable" style="">
+        <a target="_blank" href="https://lovable.dev/projects/597184c7-5c44-4ce6-9c91-5cfe8378e26e?utm_source=lovable-badge" rel="noopener nofollow" aria-label="Edit with Lovable" style="">
+            <span style="line-height:12px;">Edit with</span> <svg xmlns="http://www.w3.org/2000/svg" width="52" height="16" fill="none" viewBox="0 0 52 16">
+                <path fill="#FCFBF8" fill-rule="evenodd" d="M20.318 5.25c.643 0 1.206.14 1.69.418a2.81 2.81 0 0 1 1.118 1.191c.266.513.4 1.115.4 1.807s-.134 1.296-.4 1.812a2.81 2.81 0 0 1-1.118 1.193c-.484.278-1.047.418-1.69.418s-1.208-.14-1.695-.418a2.85 2.85 0 0 1-1.125-1.193c-.262-.516-.393-1.12-.393-1.812s.131-1.294.393-1.807a2.848 2.848 0 0 1 1.125-1.191c.487-.279 1.052-.418 1.695-.418Zm0 1.425c-.27 0-.504.076-.7.228-.193.147-.34.37-.443.67-.102.295-.153.66-.153 1.093 0 .435.05.801.153 1.1.102.3.25.524.443.676.196.147.43.22.7.22.27 0 .502-.073.694-.22.193-.152.341-.375.443-.67.103-.299.153-.667.153-1.106 0-.65-.112-1.145-.337-1.481a1.08 1.08 0 0 0-.953-.51ZM32.7 5.25c.61 0 1.127.1 1.549.3.422.197.74.48.953.849.217.368.325.809.325 1.32v2.704c0 .29.02.562.062.812.044.245.108.4.19.466V12h-1.935a5.895 5.895 0 0 1-.105-.684 7.745 7.745 0 0 1-.02-.228 2.293 2.293 0 0 1-.151.203c-.205.242-.47.437-.793.584-.32.143-.685.215-1.094.215-.406 0-.77-.08-1.094-.24a1.845 1.845 0 0 1-.756-.682 1.984 1.984 0 0 1-.27-1.045c0-.606.178-1.069.535-1.388.356-.324.87-.534 1.542-.633l1.125-.16c.225-.032.403-.074.534-.123a.622.622 0 0 0 .288-.196.549.549 0 0 0 .093-.327.65.65 0 0 0-.11-.367.702.702 0 0 0-.32-.27c-.14-.07-.31-.105-.51-.105-.32 0-.576.083-.768.251-.193.164-.298.39-.314.676h-1.923c.016-.434.147-.82.393-1.155.25-.34.596-.604 1.039-.792.442-.189.954-.283 1.535-.283Zm.99 3.498a.98.98 0 0 1-.215.14 2.49 2.49 0 0 1-.584.178l-.473.092c-.315.061-.553.156-.713.283-.155.127-.233.305-.233.534 0 .23.084.412.252.547.168.135.383.203.645.203s.494-.058.694-.173c.201-.118.355-.282.461-.49.11-.21.166-.448.166-.714v-.6Zm4.526-2.375c.065-.125.138-.243.221-.349.197-.25.437-.44.719-.571.282-.135.6-.203.952-.203.528 0 .988.138 1.377.412.389.275.688.67.896 1.186.21.512.314 1.12.314 1.824 0 .7-.107 1.309-.32 1.825-.213.512-.518.906-.915 1.18-.393.275-.854.412-1.383.412-.352 0-.667-.062-.946-.184a1.832 1.832 0 0 1-.7-.554 2.2 2.2 0 0 1-.234-.383V12h-1.843V3h1.862v3.373Zm1.284.296c-.274 0-.51.085-.707.253-.192.163-.338.397-.436.7a3.376 3.376 0 0 0-.148 1.05c0 .406.05.759.148 1.058.098.299.243.53.436.694.197.164.433.246.707.246.279 0 .512-.082.7-.246.193-.164.336-.395.43-.694.099-.3.148-.652.148-1.058 0-.405-.05-.757-.147-1.056-.095-.299-.238-.53-.43-.694a1.015 1.015 0 0 0-.7-.253Zm9.416-1.419c.602 0 1.136.131 1.604.393.466.262.829.643 1.086 1.143.263.5.394 1.097.394 1.794 0 .25-.002.449-.006.596H47.51c.018.288.071.538.164.75a1.3 1.3 0 0 0 .491.596c.214.13.465.196.757.196.319 0 .583-.082.792-.246.209-.167.34-.403.393-.706h1.862a2.48 2.48 0 0 1-.485 1.235 2.54 2.54 0 0 1-1.051.805c-.439.188-.949.283-1.53.283-.655 0-1.225-.125-1.708-.375a2.672 2.672 0 0 1-1.13-1.143c-.267-.508-.4-1.137-.4-1.887 0-.712.14-1.327.418-1.843a2.86 2.86 0 0 1 1.155-1.186c.491-.27 1.051-.405 1.678-.405Zm-.044 1.345c-.274 0-.516.068-.725.203a1.29 1.29 0 0 0-.479.59 2.045 2.045 0 0 0-.132.498h2.562a1.873 1.873 0 0 0-.138-.602 1.061 1.061 0 0 0-.418-.516 1.243 1.243 0 0 0-.67-.173Z" clip-rule="evenodd"></path>
+                <path fill="#FCFBF8" d="m26.605 9.995 1.342-4.566h1.924L27.628 12h-2.07l-2.33-6.57h1.98l1.397 4.565Zm-13.013.143h2.256c1.632 0 1.421 1.837 1.418 1.861h-5.603V3h1.93v7.138Zm31.516 1.861h-1.862V3h1.862v8.999Z"></path>
+                <path fill="url(#a)" fill-rule="evenodd" d="M2.7 3c1.492 0 2.7 1.192 2.7 2.663v1.012h.9c1.49 0 2.7 1.192 2.7 2.662S7.791 12 6.3 12H0V5.663C0 4.193 1.209 3 2.7 3Z" clip-rule="evenodd"></path>
+                <defs>
+                    <radialGradient cx="0" cy="0" r="1" gradientTransform="matrix(-1.54236 7.07838 -10.231 -2.15602 4.627 5.022)" gradientUnits="userSpaceOnUse">
+                        <stop offset=".106" stop-color="#FE7B02"></stop>
+                        <stop offset=".394" stop-color="#FE3F21"></stop>
+                        <stop offset=".608" stop-color="#F858BC"></stop>
+                        <stop offset=".929" stop-color="#575ECF"></stop>
+                    </radialGradient>
+                </defs>
+            </svg> </a> <span aria-hidden="true" style="width: 1px;height:24px;background-color:rgba(255, 255, 255, 0.04);flex-shrink:0;"></span> <button aria-label="Dismiss" title="Dismiss" type="button" style="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M10.646 4.646a.5.5 0 1 1 .707.708L8.707 8l2.646 2.646a.5.5 0 1 1-.707.707L8 8.707l-2.646 2.646a.5.5 0 1 1-.708-.707L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708L8 7.293l2.646-2.647Z" style="fill:rgb(197, 193, 185);transition:fill 0.2s;"></path>
+            </svg> </button>
+    </aside> <span aria-hidden="true" style="position: absolute; top: -20000px; left: 0px; padding: 0px; margin: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; white-space: pre; font-size: 10px; letter-spacing: normal;top:-20000px;left:0px;padding:0px;margin:0px;border-width:0px;border-style:none;border-color:oklch(0.985 0.008 80);border-image:none;white-space:pre;font-size:10px;letter-spacing:normal;">Instagram</span>
+</body>
+
+</html>

@@ -63,12 +63,26 @@ def generate_captions(property_obj):
         return {
             "caption_fr": parsed.get("caption_fr", ""),
             "caption_ar": parsed.get("caption_ar", ""),
-            "hashtags": parsed.get("hashtags", []),
+            "hashtags": normalize_hashtags(parsed.get("hashtags")),
             "headline": parsed.get("headline", ""),
         }
     except Exception:
         logger.exception("Caption generation failed for property %s", property_obj.id)
         return None
+
+
+def normalize_hashtags(value):
+    """Return a list of hashtag strings regardless of what shape the model returned."""
+    if not value:
+        return []
+    if isinstance(value, list):
+        return [str(tag).strip() for tag in value if str(tag).strip()]
+    if isinstance(value, str):
+        tokens = re.findall(r"#\w+", value)
+        if tokens:
+            return tokens
+        return [token.strip() for token in value.split() if token.strip()]
+    return []
 
 
 def parse_json_response(content):

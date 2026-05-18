@@ -52,6 +52,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "common.middleware.NoCacheHtmlInDevMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -200,6 +201,11 @@ INSTAGRAM_ACCESS_TOKEN = config("INSTAGRAM_ACCESS_TOKEN", default="")
 INSTAGRAM_ACCOUNT_ID = config("INSTAGRAM_ACCOUNT_ID", default="")
 FACEBOOK_PAGE_ID = config("FACEBOOK_PAGE_ID", default="")
 FACEBOOK_PAGE_ACCESS_TOKEN = config("FACEBOOK_PAGE_ACCESS_TOKEN", default="")
+TIKTOK_ACCESS_TOKEN = config("TIKTOK_ACCESS_TOKEN", default="")
+YOUTUBE_CLIENT_ID = config("YOUTUBE_CLIENT_ID", default="")
+YOUTUBE_CLIENT_SECRET = config("YOUTUBE_CLIENT_SECRET", default="")
+YOUTUBE_REFRESH_TOKEN = config("YOUTUBE_REFRESH_TOKEN", default="")
+YOUTUBE_CHANNEL_ID = config("YOUTUBE_CHANNEL_ID", default="")
 
 EMAIL_HOST = config("EMAIL_HOST", default="")
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
