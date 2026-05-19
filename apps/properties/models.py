@@ -178,6 +178,13 @@ class Property(models.Model):
     listed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+    short_code = models.CharField(
+        max_length=12,
+        unique=True,
+        blank=True,
+        db_index=True,
+        help_text="Public short URL slug — auto-derived from the property's UUID.",
+    )
 
     class Meta:
         ordering = ["-listed_at", "-updated_at"]
@@ -192,6 +199,18 @@ class Property(models.Model):
 
     def __str__(self) -> str:
         return self.yakeey_ref
+
+    def save(self, *args, **kwargs):
+        if not self.short_code:
+            self.short_code = _make_short_code(self.id)
+        super().save(*args, **kwargs)
+
+
+def _make_short_code(uuid_value):
+    """Derive a 6-char base32 code from a UUID (no padding, no ambiguous chars)."""
+    import base64
+    raw = base64.b32encode(uuid_value.bytes[:5]).decode("ascii").rstrip("=").lower()
+    return raw[:6]
 
 
 class PropertyImage(models.Model):

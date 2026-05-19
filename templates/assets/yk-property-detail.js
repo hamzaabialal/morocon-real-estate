@@ -20,12 +20,33 @@
     err.classList.remove("hidden");
   }
 
+  function captureUtmSource() {
+    const params = new URLSearchParams(location.search);
+    const fromUrl = params.get("utm_source");
+    if (fromUrl) {
+      sessionStorage.setItem("yk_utm_source", fromUrl);
+      return fromUrl;
+    }
+    return sessionStorage.getItem("yk_utm_source") || "";
+  }
+
   async function trackView(id) {
-    try { await yk.post(`/properties/${id}/track_view/`, { referrer: document.referrer }); } catch {}
+    try {
+      await yk.post(`/properties/${id}/track-view/`, {
+        referrer: document.referrer || "",
+        utm_source: captureUtmSource(),
+      });
+    } catch {}
   }
 
   async function trackClick(id, kind) {
-    try { await yk.post(`/properties/${id}/track_click/`, { click_type: kind }); } catch {}
+    try {
+      await yk.post(`/properties/${id}/track-click/`, {
+        click_type: kind,
+        referrer: document.referrer || "",
+        utm_source: captureUtmSource(),
+      });
+    } catch {}
   }
 
   async function load() {

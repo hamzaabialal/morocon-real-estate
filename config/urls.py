@@ -17,6 +17,7 @@ from apps.locations.urls import urlpatterns as locations_urlpatterns
 from apps.media_engine.urls import router as media_engine_router
 from apps.notifications.urls import router as notifications_router
 from apps.properties.urls import router as properties_router
+from apps.properties.views import short_url_redirect as _property_short_url_redirect
 from apps.scraper.urls import router as scraper_router
 from apps.scraper.urls import urlpatterns as scraper_urlpatterns
 from apps.social.urls import router as social_router
@@ -77,6 +78,7 @@ urlpatterns = [
         for page in _MIRRORED_PAGES if page != "homepage"
     ],
     path("properties/<uuid:property_id>", TemplateView.as_view(template_name="property_detail.html"), name="property-detail"),
+    path("p/<str:short_code>", _property_short_url_redirect, name="property-short-url"),
 ]
 
 if settings.DEBUG:

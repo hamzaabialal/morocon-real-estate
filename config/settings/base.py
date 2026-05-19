@@ -228,6 +228,11 @@ TIKTOK_ACCESS_TOKEN = config("TIKTOK_ACCESS_TOKEN", default="")
 REPLICATE_API_TOKEN = config("REPLICATE_API_TOKEN", default="")
 REPLICATE_VIDEO_MODEL = config("REPLICATE_VIDEO_MODEL", default="")
 BACKGROUND_MUSIC_PATH = config("BACKGROUND_MUSIC_PATH", default="")
+
+# Public canonical URL for the site — used to build property links in social
+# captions (so click attribution via UTM params works). In dev, this is
+# typically http://127.0.0.1:8000; in prod, https://yakeey.app (no trailing /).
+SITE_BASE_URL = config("SITE_BASE_URL", default="http://127.0.0.1:8000")
 YOUTUBE_CLIENT_ID = config("YOUTUBE_CLIENT_ID", default="")
 YOUTUBE_CLIENT_SECRET = config("YOUTUBE_CLIENT_SECRET", default="")
 YOUTUBE_REFRESH_TOKEN = config("YOUTUBE_REFRESH_TOKEN", default="")

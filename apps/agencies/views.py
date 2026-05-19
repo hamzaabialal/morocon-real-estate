@@ -278,6 +278,7 @@ class AgencyViewSet(ReadOnlyModelViewSet):
                 "property_id": str(lead.property_id),
                 "property_title": self.property_title(lead.property),
                 "source": lead.source,
+                "channel": lead.channel or "direct",
                 "masked_phone": self.mask_phone(lead.phone),
                 "created_at": lead.created_at,
             }
