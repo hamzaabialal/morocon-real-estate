@@ -1,18 +1,22 @@
-"""AI video generation via Replicate (Stable Video Diffusion).
+"""AI video generation via Replicate.
 
-When REPLICATE_API_TOKEN is set, this generates a short cinematic video clip
-from the property's cover image — a real AI-rendered video with smooth camera
-motion, not just a Ken Burns slideshow.
+When REPLICATE_API_TOKEN is set, this generates a cinematic AI video clip
+from the property's cover image — real AI-rendered camera motion, not
+just a Ken Burns slideshow.
 
-Pricing: ~$0.04 per 4-second clip with the default svd-xt model
-(rates change; see https://replicate.com/pricing).
+Default model: kwaivgi/kling-v1.6-standard (Kuaishou's Kling 1.6).
+  - Image-to-video with smooth cinematic camera moves
+  - 5 or 10 second clips, 1080p
+  - ~$0.05 per video (rates change; see https://replicate.com/pricing)
 
-Required settings (read from .env):
-    REPLICATE_API_TOKEN     long-lived API token from replicate.com
-    REPLICATE_VIDEO_MODEL   optional, defaults to a known-good SVD model
+To use a different model, set REPLICATE_VIDEO_MODEL in .env, e.g.:
+  REPLICATE_VIDEO_MODEL=minimax/video-01           # Hailuo, higher quality, ~$0.50
+  REPLICATE_VIDEO_MODEL=stability-ai/stable-video-diffusion  # cheap fallback
+
+Format: "owner/name" (uses latest version) or "owner/name:versionhash".
 
 The function returns a tuple (reel_path, square_path) just like the FFmpeg
-generator, so it's a drop-in replacement at the orchestration layer.
+generator, so it's a drop-in replacement.
 """
 import logging
 import shutil
@@ -28,7 +32,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 REPLICATE_API = "https://api.replicate.com/v1"
-DEFAULT_MODEL = "stability-ai/stable-video-diffusion:3f0457e4619daac51203dedb472816fd4af51f3149fa7a9e0b5ffcf1b8172438"
+DEFAULT_MODEL = "kwaivgi/kling-v1.6-standard"
 
 
 class ReplicateNotConfigured(Exception):
@@ -36,11 +40,7 @@ class ReplicateNotConfigured(Exception):
 
 
 def generate_ai_video(property_obj):
-    """Generate a cinematic AI video clip from the property cover image.
-
-    Returns (reel_path, square_path) — same shape as the FFmpeg generator.
-    Raises ReplicateNotConfigured if no token; lets caller pick a fallback.
-    """
+    """Generate a cinematic AI video clip. Returns (reel_path, square_path) or None."""
     token = getattr(settings, "REPLICATE_API_TOKEN", "")
     if not token:
         raise ReplicateNotConfigured()
@@ -50,23 +50,23 @@ def generate_ai_video(property_obj):
         logger.warning("Property %s has no usable image; cannot run AI video.", property_obj.id)
         return None
 
-    prediction = create_prediction(token, image_url, property_obj)
+    motion_prompt = build_motion_prompt(property_obj)
+    prediction = create_prediction(token, image_url, motion_prompt, property_obj)
     if not prediction:
         return None
 
-    output_url = poll_until_done(token, prediction["id"], timeout_seconds=300)
+    output_url = poll_until_done(token, prediction["id"], timeout_seconds=600)
     if not output_url:
         return None
 
     temp_dir = Path(tempfile.mkdtemp(prefix=f"ai-video-{property_obj.id}-"))
     raw_path = temp_dir / "raw.mp4"
-    reel_path = temp_dir / "reel.mp4"
-    square_path = temp_dir / "square.mp4"
-
     if not download_video(output_url, raw_path):
         shutil.rmtree(temp_dir, ignore_errors=True)
         return None
 
+    reel_path = temp_dir / "reel_ai.mp4"
+    square_path = temp_dir / "square_ai.mp4"
     if not transcode_aspects(raw_path, reel_path, square_path):
         shutil.rmtree(temp_dir, ignore_errors=True)
         return None
@@ -74,8 +74,23 @@ def generate_ai_video(property_obj):
     return str(reel_path), str(square_path)
 
 
+def build_motion_prompt(property_obj):
+    """Build a short camera-motion prompt that complements the still image."""
+    category = property_obj.property_category or "property"
+    motions = {
+        "VILLA":   "slow cinematic dolly forward toward the villa entrance, gentle parallax",
+        "RIAD":    "smooth pan across the courtyard, light pouring through the arches",
+        "FLAT":    "slow push-in through the living space, soft natural light shifts",
+        "HOUSE":   "elegant aerial reveal, slight zoom out, golden hour glow",
+        "OFFICE":  "smooth slider tracking shot across the workspace",
+        "TERRAIN": "drone cinematic pull-back revealing the landscape",
+    }
+    motion = motions.get(category, "slow cinematic camera move with subtle parallax")
+    return f"{motion}, real estate showcase, photorealistic, no people"
+
+
 def resolve_image_url(property_obj):
-    """Pick the best public image URL to feed the AI model."""
+    """Pick the best image URL to feed the AI model (publicly reachable or data URL)."""
     main = property_obj.images.filter(is_main=True).first()
     if main and main.url and main.url.startswith("http"):
         return main.url
@@ -85,15 +100,19 @@ def resolve_image_url(property_obj):
     cover = property_obj.cover_image_url or ""
     if cover.startswith("http"):
         return cover
+    if cover.startswith("/media/"):
+        on_disk = Path(settings.BASE_DIR) / cover.lstrip("/")
+        if on_disk.exists():
+            return file_to_data_url(on_disk)
     if cover.startswith("/assets/"):
         asset_path = Path(settings.BASE_DIR) / "templates" / "assets" / cover[len("/assets/"):]
         if asset_path.exists():
-            return upload_to_replicate_file_store(asset_path)
+            return file_to_data_url(asset_path)
     return None
 
 
-def upload_to_replicate_file_store(local_path):
-    """Replicate accepts data URLs for small files — convert and return one."""
+def file_to_data_url(local_path):
+    """Convert a local image to a base64 data URL (Replicate accepts these)."""
     import base64
     import mimetypes
     mime = mimetypes.guess_type(str(local_path))[0] or "image/jpeg"
@@ -101,38 +120,62 @@ def upload_to_replicate_file_store(local_path):
     return f"data:{mime};base64,{data}"
 
 
-def create_prediction(token, image_url, property_obj):
-    """Kick off a Replicate prediction. Returns the response JSON or None."""
+def create_prediction(token, image_url, motion_prompt, property_obj):
+    """Kick off a Replicate prediction. Picks the right input schema per model family."""
     model = getattr(settings, "REPLICATE_VIDEO_MODEL", "") or DEFAULT_MODEL
-    if ":" not in model:
-        logger.error("REPLICATE_VIDEO_MODEL must include a version: 'owner/name:version'.")
-        return None
-    version = model.split(":", 1)[1]
-    payload = {
-        "version": version,
-        "input": {
+    model_name = model.split(":", 1)[0]
+
+    if "kling" in model_name.lower():
+        input_data = {
+            "start_image": image_url,
+            "prompt": motion_prompt,
+            "duration": 5,
+            "aspect_ratio": "9:16",
+            "cfg_scale": 0.5,
+        }
+    elif "minimax" in model_name.lower() or "hailuo" in model_name.lower():
+        input_data = {
+            "first_frame_image": image_url,
+            "prompt": motion_prompt,
+            "prompt_optimizer": True,
+        }
+    else:
+        input_data = {
             "input_image": image_url,
             "frames_per_second": 6,
             "motion_bucket_id": 127,
             "cond_aug": 0.02,
             "sizing_strategy": "maintain_aspect_ratio",
-        },
-    }
+        }
+
+    headers = {"Authorization": f"Token {token}", "Content-Type": "application/json"}
+
     try:
-        response = httpx.post(
-            f"{REPLICATE_API}/predictions",
-            headers={"Authorization": f"Token {token}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=60.0,
-        )
-        response.raise_for_status()
+        if ":" in model:
+            version = model.split(":", 1)[1]
+            response = httpx.post(
+                f"{REPLICATE_API}/predictions",
+                headers=headers,
+                json={"version": version, "input": input_data},
+                timeout=60.0,
+            )
+        else:
+            response = httpx.post(
+                f"{REPLICATE_API}/models/{model_name}/predictions",
+                headers=headers,
+                json={"input": input_data},
+                timeout=60.0,
+            )
+        if response.status_code >= 400:
+            logger.error("Replicate create %s failed: %s", response.status_code, response.text[:500])
+            return None
         return response.json()
     except httpx.HTTPError as exc:
-        logger.exception("Replicate create_prediction failed: %s", exc)
+        logger.exception("Replicate create_prediction error: %s", exc)
         return None
 
 
-def poll_until_done(token, prediction_id, timeout_seconds=300):
+def poll_until_done(token, prediction_id, timeout_seconds=600):
     """Block until the prediction is done. Returns the output URL or None."""
     deadline = time.time() + timeout_seconds
     while time.time() < deadline:
@@ -164,7 +207,6 @@ def poll_until_done(token, prediction_id, timeout_seconds=300):
 
 
 def download_video(url, dest):
-    """Download the prediction output to a local file."""
     try:
         with httpx.Client(timeout=120.0, follow_redirects=True) as client:
             response = client.get(url)
@@ -184,14 +226,8 @@ def transcode_aspects(raw_path, reel_path, square_path):
     common_filter = "scale=1080:-2:force_original_aspect_ratio=increase,setsar=1"
 
     cmds = [
-        (
-            reel_path,
-            f"{common_filter},crop=1080:1920:(in_w-1080)/2:(in_h-1920)/2",
-        ),
-        (
-            square_path,
-            f"{common_filter},crop=1080:1080:(in_w-1080)/2:(in_h-1080)/2",
-        ),
+        (reel_path, f"{common_filter},crop=1080:1920:(in_w-1080)/2:(in_h-1920)/2"),
+        (square_path, f"{common_filter},crop=1080:1080:(in_w-1080)/2:(in_h-1080)/2"),
     ]
     for output_path, vf in cmds:
         result = subprocess.run(
@@ -203,8 +239,7 @@ def transcode_aspects(raw_path, reel_path, square_path):
                 "-pix_fmt", "yuv420p",
                 str(output_path),
             ],
-            capture_output=True,
-            text=True,
+            capture_output=True, text=True,
         )
         if result.returncode:
             logger.error("FFmpeg transcode to %s failed: %s", output_path.name, result.stderr[-500:])

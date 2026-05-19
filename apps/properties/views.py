@@ -1,11 +1,17 @@
 """ViewSets for property listing APIs."""
+import logging
+import threading
+import uuid
 from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.db import transaction
 from django.db.models import F, Q, Sum
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -13,6 +19,7 @@ from rest_framework.viewsets import ModelViewSet
 from apps.analytics.models import LeadEvent, PropertyClick, PropertyView
 from apps.analytics.serializers import PropertyClickSerializer
 from apps.analytics.utils import get_client_ip
+from apps.properties import bulk_import as bulk_import_helpers
 from apps.properties.filters import PropertyFilter
 from apps.properties.models import Property
 from apps.properties.permissions import IsAgencyUser
@@ -20,6 +27,45 @@ from apps.properties.serializers import PropertyDetailSerializer, PropertyListSe
 from apps.social.models import SocialPost
 from apps.social.serializers import SocialPostSerializer
 from apps.subscriptions.models import Payment
+
+
+logger = logging.getLogger(__name__)
+
+
+BULK_IMPORTS = {}
+BULK_IMPORT_LOCK = threading.Lock()
+
+
+def _update_bulk_status(job_id, **fields):
+    with BULK_IMPORT_LOCK:
+        if job_id in BULK_IMPORTS:
+            BULK_IMPORTS[job_id].update(fields)
+
+
+def _process_bulk_media(job_id, property_ids):
+    """Background worker: run media generation sequentially for each created property."""
+    from celery_tasks.media import generate_media_for_property
+
+    processed = 0
+    failed = 0
+    for property_id in property_ids:
+        try:
+            result = generate_media_for_property(str(property_id))
+            if result.get("status") == "ready":
+                processed += 1
+            else:
+                failed += 1
+        except Exception:
+            logger.exception("Bulk import: media gen failed for property %s", property_id)
+            failed += 1
+        _update_bulk_status(
+            job_id, processed=processed, failed_count=failed,
+            progress=round((processed + failed) / len(property_ids) * 100, 1),
+        )
+    _update_bulk_status(
+        job_id, state="complete", progress=100.0,
+        processed=processed, failed_count=failed,
+    )
 
 
 class PropertyViewSet(ModelViewSet):
@@ -47,13 +93,14 @@ class PropertyViewSet(ModelViewSet):
         return PropertyDetailSerializer
 
     def get_permissions(self):
-        if self.action in {"create", "partial_update", "update", "boost", "regenerate_media"}:
+        if self.action in {"create", "partial_update", "update", "boost", "regenerate_media", "bulk_import", "bulk_import_status"}:
             permission_classes = [IsAgencyUser]
         elif self.action == "destroy":
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
 
     def perform_create(self, serializer):
         agency = getattr(self.request.user, "agency", None)
@@ -195,6 +242,130 @@ class PropertyViewSet(ModelViewSet):
                 source=click.click_type,
             )
         return Response({"status": "tracked"}, status=status.HTTP_200_OK)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[AllowAny],
+        url_path="bulk-import-template",
+    )
+    def bulk_import_template(self, request):
+        """Return a small CSV template the user can fill in and re-upload."""
+        response = HttpResponse(
+            bulk_import_helpers.SAMPLE_CSV,
+            content_type="text/csv; charset=utf-8",
+        )
+        response["Content-Disposition"] = 'attachment; filename="yakeey-bulk-import-template.csv"'
+        return response
+
+    @action(
+        detail=False,
+        methods=["post"],
+        permission_classes=[IsAgencyUser],
+        parser_classes=[MultiPartParser, FormParser],
+        url_path="bulk-import",
+    )
+    def bulk_import(self, request):
+        """Accept a CSV/Excel file and create listings + queue AI media generation."""
+        file_obj = request.FILES.get("file")
+        if not file_obj:
+            return Response(
+                {"error": "No file uploaded (expected field 'file')."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rows, parse_errors = bulk_import_helpers.parse_file(file_obj)
+        if not rows and parse_errors:
+            return Response(
+                {"error": "File could not be parsed.", "details": parse_errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        max_rows = 50
+        if len(rows) > max_rows:
+            return Response(
+                {"error": f"Limit is {max_rows} rows per import. Got {len(rows)}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        agency = request.user.agency
+        created_ids = []
+        row_errors = list(parse_errors)
+
+        from apps.properties.signals import trigger_media_generation_on_create
+        from django.db.models.signals import post_save
+
+        post_save.disconnect(trigger_media_generation_on_create, sender=Property)
+        try:
+            for index, row in enumerate(rows):
+                try:
+                    with transaction.atomic():
+                        prop = Property.objects.create(
+                            agency=agency,
+                            yakeey_ref=row["yakeey_ref"],
+                            transaction_type=row["transaction_type"],
+                            property_category=row["property_category"],
+                            property_type=row.get("property_type", ""),
+                            city=row["city"],
+                            price=Decimal(str(row["price"])),
+                            area=Decimal(str(row["area"])),
+                            bedrooms=row.get("bedrooms", 0),
+                            bathrooms=row.get("bathrooms", 0),
+                            description=row.get("description", ""),
+                            cover_image_url=row.get("cover_image_url", ""),
+                        )
+                    created_ids.append(prop.id)
+                except Exception as exc:
+                    row_errors.append(f"Row {index + 2} ({row.get('yakeey_ref', '?')}): {exc}")
+        finally:
+            post_save.connect(trigger_media_generation_on_create, sender=Property)
+
+        job_id = uuid.uuid4().hex
+        with BULK_IMPORT_LOCK:
+            BULK_IMPORTS[job_id] = {
+                "state": "running",
+                "total": len(created_ids),
+                "processed": 0,
+                "failed_count": 0,
+                "progress": 0.0,
+                "row_errors": row_errors,
+                "property_ids": [str(pid) for pid in created_ids],
+            }
+
+        if created_ids:
+            thread = threading.Thread(
+                target=_process_bulk_media,
+                args=(job_id, created_ids),
+                daemon=False,
+            )
+            thread.start()
+        else:
+            _update_bulk_status(job_id, state="complete", progress=100.0)
+
+        return Response({
+            "job_id": job_id,
+            "created": len(created_ids),
+            "skipped": len(row_errors),
+            "row_errors": row_errors,
+            "message": "Listings created. AI media generation started in background — poll /bulk-import-status/?job_id=… for progress.",
+        }, status=status.HTTP_202_ACCEPTED)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsAgencyUser],
+        url_path="bulk-import-status",
+    )
+    def bulk_import_status(self, request):
+        """Return the current state of a bulk-import job (poll this from the UI)."""
+        job_id = request.query_params.get("job_id")
+        if not job_id:
+            return Response({"error": "job_id query param required"}, status=400)
+        with BULK_IMPORT_LOCK:
+            job = BULK_IMPORTS.get(job_id)
+        if not job:
+            return Response({"error": "Job not found (it may have expired)."}, status=404)
+        return Response(job)
 
     @action(detail=True, methods=["post"], permission_classes=[IsAgencyUser], url_path="regenerate-media")
     def regenerate_media(self, request, pk=None):

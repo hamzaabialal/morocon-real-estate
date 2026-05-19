@@ -9,27 +9,19 @@ from apps.properties.models import Property
 
 logger = logging.getLogger(__name__)
 
-PLACEHOLDER_COVERS = [
-    "/assets/property-1-BF0RFkF4.jpg",
-    "/assets/property-2-BdNA2aYD.jpg",
-    "/assets/property-3-B-fIDnYp.jpg",
-    "/assets/property-4-16KWJM64.jpg",
-    "/assets/property-5-CgArBAFm.jpg",
-    "/assets/property-6-Bg6-I-q8.jpg",
-]
-
 
 @receiver(post_save, sender=Property)
 def trigger_media_generation_on_create(sender, instance, created, **kwargs):
-    """When a new Property lands, ensure a cover exists then queue media generation."""
+    """When a new Property lands, queue media generation.
+
+    The media task itself owns cover resolution (AI via DALL-E first, then
+    placeholder fallback). The signal stays small and side-effect free.
+    """
     if not created or instance.media_status != "pending":
         return
 
-    if not instance.cover_image_url and not instance.images.exists():
-        placeholder = PLACEHOLDER_COVERS[hash(str(instance.id)) % len(PLACEHOLDER_COVERS)]
-        Property.objects.filter(id=instance.id).update(cover_image_url=placeholder)
-        instance.cover_image_url = placeholder
-        logger.info("Auto-assigned placeholder cover %s to property %s", placeholder, instance.id)
+    if getattr(instance, "_skip_media_signal", False):
+        return
 
     try:
         from celery_tasks.media import generate_media_for_property

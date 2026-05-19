@@ -6,10 +6,33 @@ from pathlib import Path
 from celery import shared_task
 from django.utils import timezone
 
+from apps.media_engine.ai_image import generate_cover_image
 from apps.media_engine.caption_generator import generate_captions
 from apps.media_engine.storage import upload_media_to_s3
 from apps.media_engine.video_generator import generate_property_video
 from apps.properties.models import Property
+
+
+PLACEHOLDER_COVERS = [
+    "/assets/property-1-BF0RFkF4.jpg",
+    "/assets/property-2-BdNA2aYD.jpg",
+    "/assets/property-3-B-fIDnYp.jpg",
+    "/assets/property-4-16KWJM64.jpg",
+    "/assets/property-5-CgArBAFm.jpg",
+    "/assets/property-6-Bg6-I-q8.jpg",
+]
+
+
+def ensure_cover_image(property_obj):
+    """If property has no image, try DALL-E; fall back to a bundled placeholder."""
+    if property_obj.cover_image_url or property_obj.images.exists():
+        return
+    ai_cover = generate_cover_image(property_obj)
+    if ai_cover:
+        property_obj.cover_image_url = ai_cover
+    else:
+        property_obj.cover_image_url = PLACEHOLDER_COVERS[hash(str(property_obj.id)) % len(PLACEHOLDER_COVERS)]
+    property_obj.save(update_fields=["cover_image_url", "updated_at"])
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +47,8 @@ def generate_media_for_property(property_id):
 
     temp_dir = None
     try:
+        ensure_cover_image(property_obj)
+
         captions = generate_captions(property_obj)
         if captions:
             property_obj.caption_fr = captions.get("caption_fr") or ""

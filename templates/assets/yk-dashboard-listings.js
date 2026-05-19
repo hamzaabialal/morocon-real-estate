@@ -125,8 +125,134 @@
     });
   }
 
+  function setBulkProgress(percent, state, detail) {
+    const bar = $("yk-bulk-progress-bar");
+    const textEl = $("yk-bulk-progress-text");
+    const stateEl = $("yk-bulk-state");
+    const detailEl = $("yk-bulk-progress-detail");
+    const inlineEl = $("yk-bulk-status-inline");
+    const inlinePctEl = $("yk-bulk-progress-inline");
+    if (bar) bar.style.width = `${percent}%`;
+    if (textEl) textEl.textContent = `${percent}%`;
+    if (stateEl) stateEl.textContent = state;
+    if (detailEl) detailEl.textContent = detail || "";
+    if (inlineEl && inlinePctEl) {
+      inlinePctEl.textContent = `${percent}%`;
+      if (percent < 100) inlineEl.classList.remove("hidden");
+      else inlineEl.classList.add("hidden");
+    }
+  }
+
+  function showBulkErrors(errors) {
+    const pane = $("yk-bulk-errors-pane");
+    if (!pane || !errors || !errors.length) return;
+    pane.classList.remove("hidden");
+    pane.innerHTML = errors.map(e => `<div>${esc(e)}</div>`).join("");
+  }
+
+  async function pollBulkStatus(jobId) {
+    while (true) {
+      let job;
+      try {
+        job = await yk.get(`/properties/bulk-import-status/?job_id=${encodeURIComponent(jobId)}`);
+      } catch (e) {
+        setBulkProgress(0, "Failed to read job state", e.message);
+        return;
+      }
+      const total = job.total || 0;
+      const processed = job.processed || 0;
+      const failed = job.failedCount || 0;
+      const percent = job.progress != null ? Math.round(job.progress) : 0;
+      const detail = total
+        ? `${processed} ready · ${failed} failed · ${total - processed - failed} remaining`
+        : "No listings to process";
+      setBulkProgress(percent, job.state === "complete" ? "Done" : "Generating AI media…", detail);
+      if (job.state === "complete") {
+        await loadListings();
+        return;
+      }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+
+  function wireBulkImport() {
+    const openBtn = $("yk-bulk-import");
+    const closeBtn = $("yk-bulk-close");
+    const cancelBtn = $("yk-bulk-cancel");
+    const modal = $("yk-bulk-modal");
+    const form = $("yk-bulk-form");
+    const fileInput = $("yk-bulk-file");
+    const submit = $("yk-bulk-submit");
+    const errEl = $("yk-bulk-err");
+    const progressPane = $("yk-bulk-progress-pane");
+
+    function close() {
+      modal.classList.add("hidden");
+      form.reset();
+      errEl.classList.add("hidden");
+      progressPane.classList.add("hidden");
+      $("yk-bulk-errors-pane").classList.add("hidden");
+      submit.disabled = false;
+      submit.textContent = "Upload + import";
+    }
+
+    if (openBtn) openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+    if (closeBtn) closeBtn.addEventListener("click", close);
+    if (cancelBtn) cancelBtn.addEventListener("click", close);
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errEl.classList.add("hidden");
+      $("yk-bulk-errors-pane").classList.add("hidden");
+      const file = fileInput.files[0];
+      if (!file) { errEl.textContent = "Pick a CSV or Excel file first."; errEl.classList.remove("hidden"); return; }
+
+      submit.disabled = true; submit.textContent = "Uploading…";
+      progressPane.classList.remove("hidden");
+      setBulkProgress(2, "Uploading…", `${file.name} (${Math.round(file.size / 1024)} KB)`);
+
+      const fd = new FormData();
+      fd.append("file", file);
+
+      let resp;
+      try {
+        const r = await fetch("/api/v1/properties/bulk-import/", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${localStorage.getItem("yk_access")}` },
+          body: fd,
+        });
+        const text = await r.text();
+        resp = text ? JSON.parse(text) : null;
+        if (!r.ok) throw new Error(resp?.error || `HTTP ${r.status}`);
+      } catch (ex) {
+        setBulkProgress(0, "Upload failed", ex.message);
+        if (ex.message) errEl.textContent = ex.message;
+        errEl.classList.remove("hidden");
+        submit.disabled = false; submit.textContent = "Upload + import";
+        return;
+      }
+
+      const created = resp.created || 0;
+      const rowErrors = resp.rowErrors || [];
+      setBulkProgress(5, `${created} listing(s) created`, "Generating AI media in background…");
+      if (rowErrors.length) showBulkErrors(rowErrors);
+      submit.textContent = "Working in background";
+
+      if (resp.jobId) {
+        await pollBulkStatus(resp.jobId);
+      } else {
+        setBulkProgress(100, "Done", `${created} listings created`);
+      }
+      submit.textContent = "Close";
+      submit.disabled = false;
+      submit.onclick = (e2) => { e2.preventDefault(); close(); };
+    });
+  }
+
   yk.onReady(() => {
     wireForm();
+    wireBulkImport();
     loadCities();
     loadListings();
   });
