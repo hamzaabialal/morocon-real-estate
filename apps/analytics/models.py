@@ -16,6 +16,8 @@ class PropertyView(models.Model):
     ip_address = models.GenericIPAddressField()
     user_agent = models.TextField(blank=True)
     referrer = models.URLField(null=True, blank=True)
+    channel = models.CharField(max_length=30, blank=True, db_index=True,
+                               help_text="instagram / facebook / tiktok / youtube / direct etc. (from utm_source or referrer)")
     session_key = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -46,6 +48,8 @@ class PropertyClick(models.Model):
         related_name="analytics_clicks",
     )
     click_type = models.CharField(max_length=20, choices=CLICK_TYPE_CHOICES)
+    channel = models.CharField(max_length=30, blank=True, db_index=True,
+                               help_text="instagram / facebook / tiktok / youtube / direct etc.")
     created_at = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField()
 
@@ -106,7 +110,9 @@ class LeadEvent(models.Model):
         related_name="lead_events",
     )
     phone = models.CharField(max_length=30, null=True, blank=True)
-    source = models.CharField(max_length=50)
+    source = models.CharField(max_length=50, help_text="How they contacted: call / whatsapp / email")
+    channel = models.CharField(max_length=30, blank=True, db_index=True,
+                               help_text="Where they came from: instagram / facebook / tiktok / youtube / direct")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

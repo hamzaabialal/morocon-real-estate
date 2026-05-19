@@ -111,7 +111,7 @@ def post_property_to_platform(social_post_id):
         return {"status": "already_posted", "social_post_id": social_post_id, "url": social_post.post_url}
 
     property_obj = social_post.property
-    caption = build_caption(property_obj)
+    caption = build_caption(property_obj, platform=social_post.platform)
     video_url = property_obj.reel_url or property_obj.square_video_url
 
     publisher = PUBLISHERS.get(social_post.platform)
@@ -142,10 +142,27 @@ def post_property_to_platform(social_post_id):
         return {"status": "failed", "social_post_id": str(social_post.id), "error": str(exc)}
 
 
-def build_caption(property_obj):
-    """Compose the caption text sent to each platform."""
+def build_caption(property_obj, platform="direct"):
+    """Compose the caption text sent to a platform, with UTM-attributed property link."""
+    from django.conf import settings
+    from apps.properties.views import PLATFORM_SHORT_CODES
+
     pieces = [property_obj.caption_fr or property_obj.description or ""]
+
+    base = (getattr(settings, "SITE_BASE_URL", "") or "").rstrip("/")
+    if base:
+        platform_code = PLATFORM_SHORT_CODES.get(platform, "")
+        if property_obj.short_code and platform_code:
+            link = f"{base}/p/{property_obj.short_code}?s={platform_code}"
+        else:
+            link = (
+                f"{base}/properties/{property_obj.id}"
+                f"?utm_source={platform}&utm_medium=social&utm_campaign=yakeey_reel"
+            )
+        pieces.append(f"View: {link}")
+
     hashtags = property_obj.caption_hashtags or []
     if hashtags:
         pieces.append(" ".join(hashtags))
+
     return "\n\n".join(piece for piece in pieces if piece).strip()

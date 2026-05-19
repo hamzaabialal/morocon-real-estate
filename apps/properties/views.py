@@ -3,11 +3,13 @@ import logging
 import threading
 import uuid
 from decimal import Decimal
+from urllib.parse import urlencode
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import transaction
 from django.db.models import F, Q, Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import CursorPagination
@@ -18,7 +20,12 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.analytics.models import PropertyClick, PropertyView
 from apps.analytics.serializers import PropertyClickSerializer
-from apps.analytics.utils import create_lead_event, get_client_ip
+from apps.analytics.utils import (
+    create_lead_event,
+    detect_channel_from_referrer,
+    get_client_ip,
+    normalize_channel,
+)
 from apps.properties import bulk_import as bulk_import_helpers
 from apps.properties.filters import PropertyFilter
 from apps.properties.models import Property
@@ -30,6 +37,35 @@ from apps.subscriptions.models import Payment
 
 
 logger = logging.getLogger(__name__)
+
+
+PLATFORM_SHORT_CODES = {
+    "instagram": "ig",
+    "facebook":  "fb",
+    "tiktok":    "tt",
+    "youtube":   "yt",
+    "whatsapp":  "wa",
+    "email":     "em",
+    "direct":    "d",
+}
+SHORT_CODE_TO_PLATFORM = {v: k for k, v in PLATFORM_SHORT_CODES.items()}
+
+
+def short_url_redirect(request, short_code):
+    """Resolve /p/<code>?s=<platform_code> -> /properties/<uuid>?utm_source=...&utm_medium=social&utm_campaign=yakeey_reel."""
+    try:
+        property_obj = Property.objects.only("id").get(short_code=short_code)
+    except Property.DoesNotExist:
+        raise Http404("Property not found")
+
+    s = (request.GET.get("s") or "").strip().lower()
+    utm_source = SHORT_CODE_TO_PLATFORM.get(s, s) or "direct"
+    qs = urlencode({
+        "utm_source": utm_source,
+        "utm_medium": "social",
+        "utm_campaign": "yakeey_reel",
+    })
+    return HttpResponseRedirect(f"/properties/{property_obj.id}?{qs}")
 
 
 BULK_IMPORTS = {}
@@ -212,19 +248,23 @@ class PropertyViewSet(ModelViewSet):
         url_path="track-view",
     )
     def track_view(self, request, pk=None):
-        """Record a property page view and increment its denormalized counter."""
+        """Record a property page view + attribute the channel."""
         property_obj = self.get_object()
+        referrer = (request.data.get("referrer") or request.META.get("HTTP_REFERER") or "").strip() or None
+        utm_source = request.data.get("utm_source") or ""
+        channel = normalize_channel(utm_source) or detect_channel_from_referrer(referrer) or "direct"
         PropertyView.objects.create(
             property=property_obj,
             ip_address=get_client_ip(request),
             user_agent=request.META.get("HTTP_USER_AGENT", ""),
-            referrer=request.META.get("HTTP_REFERER") or None,
+            referrer=referrer,
+            channel=channel,
             session_key=getattr(request.session, "session_key", None),
         )
         Property.objects.filter(pk=property_obj.pk).update(
             views_count=F("views_count") + 1
         )
-        return Response({"status": "tracked"}, status=status.HTTP_200_OK)
+        return Response({"status": "tracked", "channel": channel}, status=status.HTTP_200_OK)
 
     @action(
         detail=True,
@@ -233,7 +273,7 @@ class PropertyViewSet(ModelViewSet):
         url_path="track-click",
     )
     def track_click(self, request, pk=None):
-        """Record a public contact or engagement click for a property."""
+        """Record a public contact or engagement click + attribute the channel."""
         property_obj = self.get_object()
         click_type = (request.data.get("click_type") or "").strip().lower()
         if click_type not in {"call", "whatsapp", "email", "share", "website", "map"}:
@@ -241,9 +281,13 @@ class PropertyViewSet(ModelViewSet):
                 {"detail": "Invalid click_type", "code": "INVALID_CLICK_TYPE"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        referrer = (request.data.get("referrer") or request.META.get("HTTP_REFERER") or "").strip() or None
+        utm_source = request.data.get("utm_source") or ""
+        channel = normalize_channel(utm_source) or detect_channel_from_referrer(referrer) or "direct"
         PropertyClick.objects.create(
             property=property_obj,
             click_type=click_type,
+            channel=channel,
             ip_address=get_client_ip(request),
         )
         if click_type in {"call", "whatsapp", "email"}:
@@ -252,8 +296,9 @@ class PropertyViewSet(ModelViewSet):
                 agency=property_obj.agency,
                 phone=property_obj.agent_phone or None,
                 source=click_type,
+                channel=channel,
             )
-        return Response({"status": "tracked"}, status=status.HTTP_200_OK)
+        return Response({"status": "tracked", "channel": channel}, status=status.HTTP_200_OK)
 
     @action(
         detail=False,
