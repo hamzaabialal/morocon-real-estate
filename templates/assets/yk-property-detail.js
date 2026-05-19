@@ -69,6 +69,23 @@
     img.src = p.coverImageUrl || "/assets/property-1-BF0RFkF4.jpg";
     img.alt = title;
 
+    const reel = $("yk-pd-reel");
+    if (reel && p.reelUrl) {
+      if (p.coverImageUrl) reel.poster = p.coverImageUrl;
+      reel.src = p.reelUrl;
+      reel.load();
+      reel.addEventListener("error", () => {
+        reel.outerHTML = `<div class="flex-1 grid place-items-center text-xs p-4 text-center bg-muted/30" style="aspect-ratio: 9 / 16; color:#ef4444">Video failed to load:<br><a href="${esc(p.reelUrl)}" target="_blank" class="underline">${esc(p.reelUrl)}</a></div>`;
+      });
+    } else if (reel) {
+      reel.outerHTML = `<div class="flex-1 grid place-items-center text-xs text-muted-foreground bg-muted/30" style="aspect-ratio: 9 / 16;">No AI reel generated yet</div>`;
+    }
+    const sqLink = $("yk-pd-square-link");
+    if (sqLink && p.squareVideoUrl) {
+      sqLink.href = p.squareVideoUrl;
+      sqLink.classList.remove("hidden");
+    }
+
     text("yk-pd-agency-name", p.agency?.name || p.agentName || "Yakeey-listed");
     text("yk-pd-agency-meta", p.agency?.phone || p.agentPhone || "Contact via Yakeey");
 

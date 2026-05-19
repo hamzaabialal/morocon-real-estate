@@ -37,8 +37,20 @@
   <div id="yk-pd-content" class="hidden">
     <div class="mb-6 text-[10px] font-bold uppercase tracking-[0.22em] text-accent"><a href="/properties" class="hover:text-primary">← All listings</a></div>
 
-    <div class="aspect-[16/9] overflow-hidden bg-muted">
-      <img id="yk-pd-cover" src="" alt="" class="size-full object-cover"/>
+    <div class="grid gap-4 lg:grid-cols-3">
+      <div class="lg:col-span-2 aspect-[16/9] overflow-hidden bg-muted">
+        <img id="yk-pd-cover" src="" alt="" class="size-full object-cover"/>
+      </div>
+      <div class="bg-card border border-border p-4 flex flex-col">
+        <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-accent mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/></svg>
+          AI Reel
+        </div>
+        <video id="yk-pd-reel" controls muted playsinline preload="auto" crossorigin="anonymous" style="aspect-ratio: 9 / 16; width: 100%; background: #000; display: block;">
+          <p class="text-xs text-muted-foreground p-4">Your browser does not support HTML5 video.</p>
+        </video>
+        <a id="yk-pd-square-link" href="#" target="_blank" rel="noopener" class="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-accent hover:text-primary hidden">View square version →</a>
+      </div>
     </div>
 
     <div class="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">

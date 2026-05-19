@@ -28,7 +28,27 @@ def get_ffmpeg_binary():
 
 
 def generate_property_video(property_obj):
-    """Generate vertical and square property videos from property images."""
+    """Generate vertical and square property videos.
+
+    Tries AI generation (Replicate) first; falls back to FFmpeg slideshow if
+    Replicate isn't configured or the call fails.
+    """
+    try:
+        from apps.media_engine.ai_video import generate_ai_video, ReplicateNotConfigured
+        ai_result = generate_ai_video(property_obj)
+        if ai_result:
+            return ai_result
+    except ReplicateNotConfigured:
+        pass
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("AI video generation failed; falling back to FFmpeg slideshow")
+
+    return generate_slideshow_video(property_obj)
+
+
+def generate_slideshow_video(property_obj):
+    """Original Ken-Burns FFmpeg slideshow generator, used as a fallback."""
     ffmpeg_binary = get_ffmpeg_binary()
     image_urls = collect_image_urls(property_obj)
     if not image_urls:

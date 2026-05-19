@@ -313,6 +313,14 @@ class AgencyViewSet(ReadOnlyModelViewSet):
                 "clicks_count": property_obj.clicks_count,
                 "days_listed": self.days_listed(property_obj),
                 "is_featured": property_obj.is_featured,
+                "cover_image_url": property_obj.cover_image_url,
+                "media_status": property_obj.media_status,
+                "media_generated_at": property_obj.media_generated_at,
+                "reel_url": property_obj.reel_url,
+                "square_video_url": property_obj.square_video_url,
+                "caption_fr": property_obj.caption_fr,
+                "caption_ar": property_obj.caption_ar,
+                "caption_hashtags": property_obj.caption_hashtags,
             }
             for property_obj in queryset
         ]

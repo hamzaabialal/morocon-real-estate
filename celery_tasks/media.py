@@ -57,7 +57,14 @@ def generate_media_for_property(property_id):
                 "updated_at",
             ]
         )
-        return {"property_id": str(property_obj.id), "status": "ready"}
+
+        from celery_tasks.social import schedule_posts_for_property
+        scheduled = schedule_posts_for_property(property_obj)
+        return {
+            "property_id": str(property_obj.id),
+            "status": "ready",
+            "posts_scheduled": len(scheduled),
+        }
     except Exception as exc:
         logger.exception("Media generation failed for property %s", property_id)
         Property.objects.filter(id=property_id).update(media_status="failed")

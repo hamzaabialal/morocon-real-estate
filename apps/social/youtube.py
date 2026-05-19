@@ -9,6 +9,7 @@ Required settings (read from .env):
     YOUTUBE_REFRESH_TOKEN
     YOUTUBE_CHANNEL_ID      (informational, for building the post URL)
 """
+import json
 import logging
 
 import httpx
@@ -53,17 +54,19 @@ def post_to_youtube(property_obj, video_url, caption):
     }
 
     try:
-        with httpx.Client(timeout=120.0) as client:
+        with httpx.Client(timeout=300.0) as client:
             response = client.post(
                 UPLOAD_URL,
                 params={"uploadType": "multipart", "part": "snippet,status"},
                 headers={"Authorization": f"Bearer {access_token}"},
                 files={
-                    "metadata": ("metadata.json", str(metadata).replace("'", '"'), "application/json"),
+                    "metadata": ("metadata.json", json.dumps(metadata), "application/json; charset=UTF-8"),
                     "video": ("video.mp4", video_bytes, "video/mp4"),
                 },
             )
-            response.raise_for_status()
+            if response.status_code >= 400:
+                logger.error("YouTube upload %s: %s", response.status_code, response.text[:500])
+                response.raise_for_status()
             video_id = response.json().get("id")
             if not video_id:
                 logger.error("YouTube upload returned no id: %s", response.text)

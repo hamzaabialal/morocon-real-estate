@@ -30,9 +30,9 @@ beat_schedule = {
         "task": "celery_tasks.analytics.aggregate_daily_analytics",
         "schedule": crontab(minute=0, hour=0),
     },
-    "schedule-social-posts-9am": {
-        "task": "celery_tasks.social.schedule_social_posts",
-        "schedule": crontab(minute=0, hour=9),
+    "publish-due-social-posts-hourly": {
+        "task": "celery_tasks.social.publish_due_social_posts",
+        "schedule": crontab(minute=0),
     },
 }
 

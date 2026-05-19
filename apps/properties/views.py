@@ -47,7 +47,7 @@ class PropertyViewSet(ModelViewSet):
         return PropertyDetailSerializer
 
     def get_permissions(self):
-        if self.action in {"create", "partial_update", "update", "boost"}:
+        if self.action in {"create", "partial_update", "update", "boost", "regenerate_media"}:
             permission_classes = [IsAgencyUser]
         elif self.action == "destroy":
             permission_classes = [IsAdminUser]
@@ -195,6 +195,46 @@ class PropertyViewSet(ModelViewSet):
                 source=click.click_type,
             )
         return Response({"status": "tracked"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAgencyUser], url_path="regenerate-media")
+    def regenerate_media(self, request, pk=None):
+        """Clear existing AI media + re-run captions + video generation for this property."""
+        property_obj = self.get_object()
+        user_agency_id = getattr(request.user, "agency_id", None)
+        if not request.user.is_staff and property_obj.agency_id != user_agency_id:
+            return Response(
+                {"error": "You do not own this listing.", "code": "NOT_LISTING_OWNER"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        property_obj.media_status = "pending"
+        property_obj.caption_fr = ""
+        property_obj.caption_ar = ""
+        property_obj.caption_hashtags = []
+        property_obj.reel_url = ""
+        property_obj.square_video_url = ""
+        property_obj.media_generated_at = None
+        property_obj.save(
+            update_fields=[
+                "media_status", "caption_fr", "caption_ar", "caption_hashtags",
+                "reel_url", "square_video_url", "media_generated_at", "updated_at",
+            ]
+        )
+
+        from celery_tasks.media import generate_media_for_property
+        result = generate_media_for_property(str(property_obj.id))
+        property_obj.refresh_from_db()
+        return Response({
+            "status": result.get("status", "unknown"),
+            "media_status": property_obj.media_status,
+            "caption_fr": property_obj.caption_fr,
+            "caption_ar": property_obj.caption_ar,
+            "caption_hashtags": property_obj.caption_hashtags,
+            "reel_url": property_obj.reel_url,
+            "square_video_url": property_obj.square_video_url,
+            "media_generated_at": property_obj.media_generated_at,
+            "error": result.get("error"),
+        })
 
     @action(detail=True, methods=["post"], permission_classes=[IsAgencyUser])
     def boost(self, request, pk=None):
