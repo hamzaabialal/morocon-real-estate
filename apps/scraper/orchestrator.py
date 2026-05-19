@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 async def run_full_sarouty_scrape(
-    max_pages: int = None,
+    max_pages: int = 50,
     batch_size: int = 25,
 ) -> ScrapeJob:
     """Full API pipeline: page discovery, scrape listings, return completed job."""
@@ -84,17 +84,6 @@ async def run_full_sarouty_scrape(
             update_fields=["status", "finished_at", "notes"]
         )
         return job
-
-
-async def run_full_scrape(max_pages: int = None, batch_size: int = 25) -> dict:
-    """Compatibility entry point for scheduled Sarouty scrape tasks."""
-    job = await run_full_sarouty_scrape(max_pages=max_pages, batch_size=batch_size)
-    return {
-        "job_id": str(job.id),
-        "status": job.status,
-        "records_scraped": job.records_scraped,
-        "errors_count": job.errors_count,
-    }
 
 
 def _extract_listings_and_meta(payload: dict | None) -> tuple[list[dict], dict]:

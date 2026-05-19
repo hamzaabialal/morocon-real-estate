@@ -1,12 +1,9 @@
 """Celery tasks for scraper workflows."""
-import logging
-
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 
-logger = logging.getLogger(__name__)
-task_logger = get_task_logger(__name__)
+logger = get_task_logger(__name__)
 
 
 @shared_task(name="run_nightly_sarouty_scrape", bind=True, max_retries=2)
@@ -19,15 +16,21 @@ def run_nightly_sarouty_scrape(self):
     """
     import asyncio
 
-    from apps.scraper.orchestrator import run_full_scrape
+    from apps.scraper.orchestrator import run_full_sarouty_scrape
 
-    task_logger.info("Nightly Sarouty scrape started at %s", timezone.now())
+    logger.info("Nightly Sarouty scrape started at %s", timezone.now())
     try:
-        result = asyncio.run(run_full_scrape(max_pages=50, batch_size=25))
-        task_logger.info("Nightly scrape completed: %s", result)
+        job = asyncio.run(run_full_sarouty_scrape())
+        result = {
+            "job_id": str(job.id),
+            "records_scraped": job.records_scraped,
+            "errors_count": job.errors_count,
+            "status": job.status,
+        }
+        logger.info("Nightly scrape completed: %s", result)
         return result
     except Exception as exc:
-        task_logger.error("Nightly scrape failed: %s", exc)
+        logger.error("Nightly scrape failed: %s", exc)
         raise self.retry(exc=exc, countdown=60 * 30)
 
 

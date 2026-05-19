@@ -20,7 +20,7 @@ app = Celery(
     ],
 )
 app.config_from_object("django.conf:settings", namespace="CELERY")
-app.autodiscover_tasks()
+app.autodiscover_tasks(["celery_tasks"])
 
 app.conf.broker_url = settings.CELERY_BROKER_URL
 app.conf.result_backend = settings.CELERY_RESULT_BACKEND
@@ -46,6 +46,11 @@ beat_schedule = {
     },
     "run-sarouty-listings-daily": {
         "task": "celery_tasks.scraper.run_sarouty_listing_discovery",
+        "schedule": crontab(hour=2, minute=0),
+        "options": {"timezone": "Africa/Casablanca"},
+    },
+    "nightly-sarouty-scrape": {
+        "task": "run_nightly_sarouty_scrape",
         "schedule": crontab(hour=2, minute=0),
         "options": {"timezone": "Africa/Casablanca"},
     },
