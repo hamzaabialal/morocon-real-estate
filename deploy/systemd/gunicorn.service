@@ -1,0 +1,16 @@
+[Unit]
+Description=Yakeey Gunicorn daemon
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/yakeey-backend
+EnvironmentFile=/home/ubuntu/yakeey-backend/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+ExecStart=/home/ubuntu/yakeey-backend/.venv/bin/gunicorn config.wsgi:application --config /home/ubuntu/yakeey-backend/gunicorn.conf.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

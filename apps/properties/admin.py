@@ -1,4 +1,4 @@
-"""Admin registrations for property models."""
+"""Admin configuration for property listings and related records."""
 from django.contrib import admin
 
 from apps.properties.models import Property, PropertyFeatures, PropertyImage
@@ -17,18 +17,38 @@ class PropertyFeaturesInline(admin.StackedInline):
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = (
+    list_display = [
         "yakeey_ref",
+        "title",
         "city",
         "property_category",
         "price",
         "status",
         "media_status",
+        "is_featured",
         "agency",
-        "created_at",
-    )
-    list_filter = ("status", "media_status", "property_category", "transaction_type", "source", "city")
-    search_fields = ("yakeey_ref", "description", "formatted_address", "agency__name")
+        "views_count",
+    ]
+    list_filter = [
+        "status",
+        "media_status",
+        "transaction_type",
+        "property_category",
+        "property_type",
+        "city",
+        "is_featured",
+        "is_verified",
+        "source",
+    ]
+    search_fields = [
+        "yakeey_ref",
+        "description",
+        "formatted_address",
+        "main_address",
+        "agency__name",
+        "agent_name",
+        "agent_phone",
+    ]
     readonly_fields = (
         "id",
         "views_count",
@@ -45,7 +65,8 @@ class PropertyAdmin(admin.ModelAdmin):
         ("Identity", {"fields": ("id", "yakeey_ref", "agency", "source")}),
         ("Listing", {"fields": ("transaction_type", "property_category", "property_type", "status", "is_featured")}),
         ("Price + area", {"fields": ("price", "currency", "area", "bedrooms", "bathrooms", "toilets")}),
-        ("Location", {"fields": ("city", "district", "neighborhood", "latitude", "longitude", "formatted_address")}),
+        ("Location", {"fields": ("city", "district", "neighborhood", "latitude", "longitude", "formatted_address", "main_address")}),
+        ("Agent", {"fields": ("agent_name", "agent_phone")}),
         ("Description", {"fields": ("description",)}),
         ("Media", {"fields": ("media_status", "media_generated_at", "cover_image_url", "reel_url", "square_video_url")}),
         ("AI captions", {"fields": ("caption_fr", "caption_ar", "caption_hashtags")}),
@@ -53,15 +74,19 @@ class PropertyAdmin(admin.ModelAdmin):
     )
     inlines = [PropertyImageInline, PropertyFeaturesInline]
 
+    @admin.display(description="Title")
+    def title(self, obj):
+        return obj.formatted_address or obj.main_address or obj.yakeey_ref
+
 
 @admin.register(PropertyImage)
 class PropertyImageAdmin(admin.ModelAdmin):
-    list_display = ("property", "order", "is_main", "url")
-    list_filter = ("is_main",)
-    search_fields = ("property__yakeey_ref",)
+    list_display = ["property", "url", "order", "is_main", "created_at"]
+    list_filter = ["is_main", "created_at"]
+    search_fields = ["property__yakeey_ref", "url"]
 
 
 @admin.register(PropertyFeatures)
 class PropertyFeaturesAdmin(admin.ModelAdmin):
-    list_display = ("property",)
-    search_fields = ("property__yakeey_ref",)
+    list_display = ["property"]
+    search_fields = ["property__yakeey_ref"]

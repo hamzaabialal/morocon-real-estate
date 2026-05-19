@@ -72,6 +72,10 @@ class Agency(models.Model):
     email = models.EmailField(null=True, blank=True)
     website = models.URLField(null=True, blank=True)
     logo_url = models.URLField(null=True, blank=True)
+    sarouty_agency_id = models.CharField(max_length=100, null=True, blank=True)
+    sarouty_profile_url = models.URLField(null=True, blank=True)
+    total_listings = models.IntegerField(default=0)
+    is_claimed = models.BooleanField(default=False)
     city = models.ForeignKey(
         "locations.City",
         on_delete=models.SET_NULL,

@@ -1,0 +1,17 @@
+[Unit]
+Description=Yakeey Celery worker
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/yakeey-backend
+EnvironmentFile=/home/ubuntu/yakeey-backend/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+ExecStart=/home/ubuntu/yakeey-backend/.venv/bin/celery -A celery_app worker --loglevel=info -c 2
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

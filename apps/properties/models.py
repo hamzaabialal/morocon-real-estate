@@ -54,8 +54,32 @@ class Property(models.Model):
         ("ready", "Ready"),
         ("failed", "Failed"),
     ]
+    ENRICHMENT_CONFIDENCE_CHOICES = [
+        ("HIGH", "HIGH"),
+        ("MEDIUM", "MEDIUM"),
+        ("NONE", "NONE"),
+    ]
+    SCRAPE_STATUS_CHOICES = [
+        ("PENDING", "PENDING"),
+        ("SCRAPED", "SCRAPED"),
+        ("ENRICHED", "ENRICHED"),
+        ("FAILED", "FAILED"),
+    ]
+    LISTING_TYPE_CHOICES = [("SALE", "SALE"), ("RENT", "RENT")]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sarouty_id = models.IntegerField(unique=True, null=True, blank=True)
+    yakeey_id = models.CharField(max_length=20, null=True, blank=True)
+    enrichment_confidence = models.CharField(
+        max_length=10, choices=ENRICHMENT_CONFIDENCE_CHOICES, default="NONE"
+    )
+    scrape_status = models.CharField(
+        max_length=20, choices=SCRAPE_STATUS_CHOICES, default="PENDING"
+    )
+    last_scraped_at = models.DateTimeField(null=True, blank=True)
+    listing_type = models.CharField(
+        max_length=10, choices=LISTING_TYPE_CHOICES, null=True, blank=True
+    )
     yakeey_ref = models.CharField(max_length=30, unique=True)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPE_CHOICES)
     property_category = models.CharField(
@@ -63,11 +87,11 @@ class Property(models.Model):
     )
     property_type = models.CharField(max_length=30, choices=TYPE_CHOICES, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="LISTED")
-    price = models.DecimalField(max_digits=14, decimal_places=2)
+    price = models.DecimalField(max_digits=19, decimal_places=2)
     currency = models.CharField(max_length=5, default="DH")
-    area = models.DecimalField(max_digits=10, decimal_places=2)
+    area = models.DecimalField(max_digits=19, decimal_places=2)
     built_area = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
+        max_digits=19, decimal_places=2, null=True, blank=True
     )
     bedrooms = models.IntegerField(default=0)
     bathrooms = models.IntegerField(default=0)
@@ -103,10 +127,16 @@ class Property(models.Model):
     agent_name = models.CharField(max_length=150, blank=True)
     agent_phone = models.CharField(max_length=30, blank=True)
     registration_fees = models.DecimalField(
-        max_digits=14, decimal_places=2, null=True, blank=True
+        max_digits=19, decimal_places=2, null=True, blank=True
     )
     total_acquisition_cost = models.DecimalField(
-        max_digits=14, decimal_places=2, null=True, blank=True
+        max_digits=19, decimal_places=2, null=True, blank=True
+    )
+    land_registration_fees = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True
+    )
+    notary_fees = models.DecimalField(
+        max_digits=19, decimal_places=2, null=True, blank=True
     )
     views_count = models.IntegerField(default=0)
     city = models.ForeignKey(

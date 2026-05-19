@@ -1,4 +1,4 @@
-"""Admin registrations for SocialPost rows."""
+"""Admin configuration for social publishing records."""
 from django.contrib import admin
 
 from apps.social.models import SocialPost
@@ -6,16 +6,19 @@ from apps.social.models import SocialPost
 
 @admin.register(SocialPost)
 class SocialPostAdmin(admin.ModelAdmin):
-    list_display = (
+    list_display = [
         "property",
         "platform",
         "status",
         "scheduled_at",
         "posted_at",
         "post_url",
-    )
-    list_filter = ("status", "platform")
-    search_fields = ("property__yakeey_ref", "post_url", "error_message")
+        "likes",
+        "views",
+        "shares",
+    ]
+    list_filter = ["platform", "status", "scheduled_at", "posted_at", "created_at"]
+    search_fields = ["property__yakeey_ref", "post_url", "platform_post_id", "error_message"]
     readonly_fields = ("id", "created_at", "posted_at", "post_url", "platform_post_id")
     actions = ["retry_publish"]
 

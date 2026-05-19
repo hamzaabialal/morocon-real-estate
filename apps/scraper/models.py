@@ -64,3 +64,61 @@ class CollectionRun(models.Model):
 
     def __str__(self) -> str:
         return f"PropertyFinder collection {self.started_at or self.id}"
+
+
+class ScrapeJob(models.Model):
+    """Execution record for Sarouty and Yakeey scraper jobs."""
+
+    SOURCE_CHOICES = [
+        ("sarouty", "sarouty"),
+        ("yakeey", "yakeey"),
+    ]
+    STATUS_CHOICES = [
+        ("pending", "pending"),
+        ("running", "running"),
+        ("completed", "completed"),
+        ("failed", "failed"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="pending"
+    )
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    start_id = models.IntegerField(null=True, blank=True)
+    end_id = models.IntegerField(null=True, blank=True)
+    records_scraped = models.IntegerField(default=0)
+    errors_count = models.IntegerField(default=0)
+    notes = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Scrape Job"
+        verbose_name_plural = "Scrape Jobs"
+
+    def __str__(self) -> str:
+        return f"{self.source} scrape {self.created_at or self.id}"
+
+
+class ScrapeError(models.Model):
+    """Individual record failure captured during a scraper job."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    job = models.ForeignKey(
+        ScrapeJob, on_delete=models.CASCADE, related_name="errors"
+    )
+    listing_id = models.IntegerField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
+    error_message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Scrape Error"
+        verbose_name_plural = "Scrape Errors"
+
+    def __str__(self) -> str:
+        return f"{self.job_id} error {self.listing_id or self.id}"

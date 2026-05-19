@@ -4,21 +4,21 @@ import threading
 import uuid
 from decimal import Decimal
 
-from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import transaction
 from django.db.models import F, Q, Sum
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.pagination import CursorPagination
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from apps.analytics.models import LeadEvent, PropertyClick, PropertyView
+from apps.analytics.models import PropertyClick, PropertyView
 from apps.analytics.serializers import PropertyClickSerializer
-from apps.analytics.utils import get_client_ip
+from apps.analytics.utils import create_lead_event, get_client_ip
 from apps.properties import bulk_import as bulk_import_helpers
 from apps.properties.filters import PropertyFilter
 from apps.properties.models import Property
@@ -68,10 +68,20 @@ def _process_bulk_media(job_id, property_ids):
     )
 
 
+class PropertyCursorPagination(CursorPagination):
+    """Cursor pagination for deep marketplace browsing."""
+
+    page_size = 24
+    page_size_query_param = "page_size"
+    max_page_size = 100
+    ordering = "-id"
+
+
 class PropertyViewSet(ModelViewSet):
-    """Property listing endpoints and public tracking actions."""
+    """Property listing endpoints, public tracking actions, and agency-owner write paths."""
 
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+    pagination_class = PropertyCursorPagination
     filterset_class = PropertyFilter
     search_fields = ["yakeey_ref", "description", "formatted_address", "main_address"]
     ordering_fields = ["price", "area", "listed_at", "created_at", "views_count"]
@@ -83,7 +93,7 @@ class PropertyViewSet(ModelViewSet):
             .prefetch_related("images")
             .all()
         )
-        if self.action in {"list", "featured", "similar"}:
+        if self.action in {"list", "featured", "similar", "search"}:
             queryset = queryset.filter(status="LISTED")
         return queryset
 
@@ -93,14 +103,16 @@ class PropertyViewSet(ModelViewSet):
         return PropertyDetailSerializer
 
     def get_permissions(self):
-        if self.action in {"create", "partial_update", "update", "boost", "regenerate_media", "bulk_import", "bulk_import_status"}:
+        if self.action in {
+            "create", "partial_update", "update",
+            "boost", "regenerate_media", "bulk_import", "bulk_import_status",
+        }:
             permission_classes = [IsAgencyUser]
         elif self.action == "destroy":
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
-
 
     def perform_create(self, serializer):
         agency = getattr(self.request.user, "agency", None)
@@ -117,14 +129,15 @@ class PropertyViewSet(ModelViewSet):
 
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def search(self, request):
-        """Full-text search listings while preserving normal property filters."""
+        """Full-text search listed properties."""
         query = request.query_params.get("q", "").strip()
-        queryset = self.filter_queryset(self.get_queryset().filter(status="LISTED"))
+        queryset = self.filter_queryset(self.get_queryset())
         if query:
             vector = (
                 SearchVector("property_type", weight="A")
                 + SearchVector("description", weight="B")
                 + SearchVector("formatted_address", weight="B")
+                + SearchVector("main_address", weight="B")
             )
             search_query = SearchQuery(query)
             queryset = (
@@ -136,8 +149,7 @@ class PropertyViewSet(ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(self.get_serializer(queryset, many=True).data)
 
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def featured(self, request):
@@ -147,8 +159,7 @@ class PropertyViewSet(ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(self.get_serializer(queryset, many=True).data)
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def similar(self, request, pk=None):
@@ -169,16 +180,13 @@ class PropertyViewSet(ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(self.get_serializer(queryset, many=True).data)
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def social(self, request, pk=None):
         """Return social performance for one listing."""
         property_obj = self.get_object()
-        queryset = SocialPost.objects.filter(property=property_obj).select_related(
-            "property"
-        )
+        queryset = SocialPost.objects.filter(property=property_obj).select_related("property")
         totals = queryset.aggregate(
             total_likes=Sum("likes"),
             total_views=Sum("views"),
@@ -227,19 +235,23 @@ class PropertyViewSet(ModelViewSet):
     def track_click(self, request, pk=None):
         """Record a public contact or engagement click for a property."""
         property_obj = self.get_object()
-        serializer = PropertyClickSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        click = PropertyClick.objects.create(
+        click_type = (request.data.get("click_type") or "").strip().lower()
+        if click_type not in {"call", "whatsapp", "email", "share", "website", "map"}:
+            return Response(
+                {"detail": "Invalid click_type", "code": "INVALID_CLICK_TYPE"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        PropertyClick.objects.create(
             property=property_obj,
-            click_type=serializer.validated_data["click_type"],
+            click_type=click_type,
             ip_address=get_client_ip(request),
         )
-        if click.click_type in {"call", "whatsapp", "email"}:
-            LeadEvent.objects.create(
-                property=property_obj,
+        if click_type in {"call", "whatsapp", "email"}:
+            create_lead_event(
+                property_obj=property_obj,
                 agency=property_obj.agency,
                 phone=property_obj.agent_phone or None,
-                source=click.click_type,
+                source=click_type,
             )
         return Response({"status": "tracked"}, status=status.HTTP_200_OK)
 
@@ -367,7 +379,12 @@ class PropertyViewSet(ModelViewSet):
             return Response({"error": "Job not found (it may have expired)."}, status=404)
         return Response(job)
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAgencyUser], url_path="regenerate-media")
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAgencyUser],
+        url_path="regenerate-media",
+    )
     def regenerate_media(self, request, pk=None):
         """Clear existing AI media + re-run captions + video generation for this property."""
         property_obj = self.get_object()
@@ -410,6 +427,7 @@ class PropertyViewSet(ModelViewSet):
     @action(detail=True, methods=["post"], permission_classes=[IsAgencyUser])
     def boost(self, request, pk=None):
         """Create a one-time Stripe checkout session to boost a listing."""
+        from django.conf import settings
         property_obj = self.get_object()
         user_agency_id = getattr(request.user, "agency_id", None)
         if not request.user.is_staff and property_obj.agency_id != user_agency_id:
