@@ -3,15 +3,13 @@ import asyncio
 import time
 from typing import Any
 
-from django.core.cache import caches
+import redis
+from django.conf import settings
 
 
 def get_redis_client() -> Any:
-    """Return the redis-py client backing Django's default cache."""
-    cache = caches["default"]
-    if hasattr(cache, "_cache") and hasattr(cache._cache, "get_client"):
-        return cache._cache.get_client(None, write=True)
-    raise RuntimeError("Default Django cache does not expose a Redis client.")
+    """Return a redis-py client for the configured Redis URL."""
+    return redis.from_url(settings.REDIS_URL)
 
 
 class RedisTokenBucket:

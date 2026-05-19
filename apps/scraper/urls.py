@@ -31,4 +31,4 @@ urlpatterns = [
         RetryScrapeJobView.as_view(),
         name="retry-scrape-job",
     ),
-]
+] + router.urls

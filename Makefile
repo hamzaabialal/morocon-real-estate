@@ -34,7 +34,7 @@ agencies:
 	python manage.py scrape_sarouty_agencies
 
 sarouty:
-	python manage.py scrape_sarouty --start-id=850000 --end-id=950000
+	python manage.py scrape_sarouty --max-pages=10
 
 enrich:
 	python manage.py enrich_from_yakeey --file=data/Yakeey.parquet

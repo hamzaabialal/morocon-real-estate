@@ -9,6 +9,9 @@ from apps.scraper.rate_limiter import SAROUTY_RATE_LIMITER
 
 logger = logging.getLogger(__name__)
 
+PLAYWRIGHT_DELAY_MIN = 3.0
+PLAYWRIGHT_DELAY_MAX = 7.0
+
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
@@ -29,7 +32,7 @@ async def fetch_html(url: str, use_playwright: bool = False) -> str | None:
     """Fetch HTML from a URL, returning None on any failure."""
     try:
         await SAROUTY_RATE_LIMITER.acquire()
-        await asyncio.sleep(random.uniform(3, 7))
+        await asyncio.sleep(random.uniform(PLAYWRIGHT_DELAY_MIN, PLAYWRIGHT_DELAY_MAX))
 
         if use_playwright:
             return await _fetch_with_playwright(url)

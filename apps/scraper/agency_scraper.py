@@ -3,6 +3,7 @@ import logging
 import re
 from urllib.parse import urljoin, urlparse
 
+import httpx
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
 from django.db import transaction
@@ -13,8 +14,9 @@ from apps.scraper.http_client import fetch_html
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = "https://www.sarouty.ma/en"
+BASE_URL = "https://www.sarouty.ma"
 DIRECTORY_URL = BASE_URL + "/trouver-une-agence/?page={page_num}"
+AGENTS_API_URL = "https://b2c-be-prod.api.sarouty.ma/api/agents"
 
 CITY_ALIASES = {
     "casa": "Casablanca",
@@ -59,6 +61,10 @@ PROFILE_URL_PATTERNS = [
 
 async def fetch_agency_directory_page(page_num: int) -> list[dict]:
     """Fetch and parse one Sarouty agency directory page."""
+    api_agencies = await _fetch_agencies_from_api(page_num)
+    if api_agencies:
+        return api_agencies
+
     url = DIRECTORY_URL.format(page_num=page_num)
     html = await fetch_html(url, use_playwright=False)
     if not html:
@@ -83,6 +89,73 @@ async def fetch_agency_directory_page(page_num: int) -> list[dict]:
     except Exception:
         logger.exception("Failed to parse Sarouty agency directory page %s", page_num)
         return []
+
+
+async def _fetch_agencies_from_api(page_num: int) -> list[dict]:
+    """Fetch agency directory rows from Sarouty's React API."""
+    try:
+        async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
+            response = await client.get(
+                AGENTS_API_URL,
+                params={"limit": 24, "page": page_num, "sort": "name_asc"},
+                headers={
+                    "Accept": "application/json",
+                    "Accept-Language": "fr-MA,fr;q=0.9,ar;q=0.8",
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/125.0.0.0 Safari/537.36"
+                    ),
+                },
+            )
+        if response.status_code != 200:
+            logger.warning(
+                "Sarouty agents API returned HTTP %s for page %s",
+                response.status_code,
+                page_num,
+            )
+            return []
+        payload = response.json()
+        rows = ((payload.get("data") or {}).get("data") or [])
+        if not isinstance(rows, list):
+            return []
+        return [
+            agency
+            for agency in (_parse_api_agency(row) for row in rows)
+            if agency is not None
+        ]
+    except Exception:
+        logger.exception("Failed to fetch Sarouty agents API page %s", page_num)
+        return []
+
+
+def _parse_api_agency(row: dict) -> dict | None:
+    """Normalize one Sarouty API agency row to our scraper shape."""
+    if not isinstance(row, dict):
+        return None
+
+    name = (row.get("agent_name") or "").strip()
+    if not name:
+        return None
+
+    agent_id = row.get("agent_id")
+    client_id = row.get("client_id") or agent_id
+    profile_url = (
+        f"{BASE_URL}/agent-details?agent_id={client_id}" if client_id else None
+    )
+    total_listings = int(row.get("total_properties") or 0)
+    logo_url = row.get("logo_cdn_path") or row.get("logo_url") or row.get("logo_token")
+
+    return {
+        "name": name,
+        "phone": _normalize_phone(row.get("agent_phone") or row.get("agent_phone2")),
+        "logo_url": logo_url,
+        "sarouty_profile_url": profile_url,
+        "sarouty_agency_id": str(agent_id or client_id)[:100] if (agent_id or client_id) else None,
+        "city": _extract_city_from_address(row.get("agent_address") or ""),
+        "email": (row.get("agent_email") or "").strip() or None,
+        "total_listings": total_listings,
+    }
 
 
 async def scrape_all_agencies() -> dict:
@@ -116,6 +189,19 @@ def normalize_city_name(value: str | None) -> str:
         return ""
     cleaned = re.sub(r"\s+", " ", value).strip()
     return CITY_ALIASES.get(cleaned.lower(), cleaned)
+
+
+def _extract_city_from_address(value: str | None) -> str:
+    if not value:
+        return ""
+    text = re.sub(r"\s+", " ", str(value)).strip()
+    normalized = normalize_city_name(text)
+    if normalized != text:
+        return normalized
+    for alias, canonical in CITY_ALIASES.items():
+        if re.search(rf"\b{re.escape(alias)}\b", text, re.IGNORECASE):
+            return canonical
+    return text[:120] if "," not in text and len(text) <= 40 else ""
 
 
 def _candidate_cards(soup: BeautifulSoup) -> list:
@@ -195,6 +281,13 @@ def _extract_phone(text: str) -> str | None:
     return re.sub(r"[\s.\-]", "", match.group(0)) if match else None
 
 
+def _normalize_phone(value: str | None) -> str | None:
+    if not value:
+        return None
+    match = re.search(r"(\+?212|0)\s?[5-7](?:[\s.\-]?\d){8}", str(value))
+    return re.sub(r"[\s.\-]", "", match.group(0)) if match else None
+
+
 def _extract_logo(card) -> str | None:
     image = card.find("img")
     if not image:
@@ -239,6 +332,8 @@ def _upsert_agency(agency_data: dict) -> bool:
     agency.sarouty_agency_id = agency_data.get("sarouty_agency_id") or None
     agency.sarouty_profile_url = agency_data.get("sarouty_profile_url") or None
     agency.logo_url = agency_data.get("logo_url") or agency.logo_url
+    agency.email = agency_data.get("email") or agency.email
+    agency.total_listings = agency_data.get("total_listings") or agency.total_listings
     if agency_data.get("phone") and not agency.phone:
         agency.phone = agency_data["phone"]
 
