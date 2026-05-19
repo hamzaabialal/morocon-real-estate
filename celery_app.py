@@ -31,9 +31,9 @@ beat_schedule = {
         "task": "celery_tasks.analytics.aggregate_daily_analytics",
         "schedule": crontab(minute=0, hour=0),
     },
-    "schedule-social-posts-9am": {
-        "task": "celery_tasks.social.schedule_social_posts",
-        "schedule": crontab(minute=0, hour=9),
+    "publish-due-social-posts-hourly": {
+        "task": "celery_tasks.social.publish_due_social_posts",
+        "schedule": crontab(minute=0),
     },
     "send-weekly-agency-report-monday-9am": {
         "task": "celery_tasks.notifications.send_weekly_agency_report",
@@ -51,11 +51,10 @@ beat_schedule = {
     },
 }
 
-if settings.CELERY_SCRAPE_PROPERTYFINDER_ENABLED:
-    beat_schedule["scrape-propertyfinder-every-24h"] = {
-        "task": "celery_tasks.scraper.scrape_propertyfinder",
-        "schedule": crontab(minute=0, hour=3),
-    }
+# Note: the old `scrape_propertyfinder` task was replaced by
+# `run_sarouty_listing_discovery` (daily 2am) + `run_sarouty_agency_scrape`
+# (monthly 1st of month). CELERY_SCRAPE_PROPERTYFINDER_ENABLED is now a no-op
+# kept only to avoid breaking existing .env files.
 
 app.conf.beat_schedule = beat_schedule
 

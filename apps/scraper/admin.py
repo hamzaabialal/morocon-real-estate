@@ -1,4 +1,4 @@
-"""Admin configuration for collected PropertyFinder data."""
+"""Admin configuration for scraper bookkeeping."""
 from django.contrib import admin
 
 from apps.scraper.models import CollectedAgency, CollectionRun, ScrapeError, ScrapeJob

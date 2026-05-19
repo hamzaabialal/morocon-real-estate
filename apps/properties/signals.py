@@ -12,8 +12,15 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Property)
 def trigger_media_generation_on_create(sender, instance, created, **kwargs):
-    """When a new Property row lands, queue caption + video generation."""
+    """When a new Property lands, queue media generation.
+
+    The media task itself owns cover resolution (AI via DALL-E first, then
+    placeholder fallback). The signal stays small and side-effect free.
+    """
     if not created or instance.media_status != "pending":
+        return
+
+    if getattr(instance, "_skip_media_signal", False):
         return
 
     try:
@@ -21,3 +28,4 @@ def trigger_media_generation_on_create(sender, instance, created, **kwargs):
         generate_media_for_property.delay(str(instance.id))
     except Exception:
         logger.exception("Failed to enqueue media generation for property %s", instance.id)
+        Property.objects.filter(id=instance.id).update(media_status="failed")
