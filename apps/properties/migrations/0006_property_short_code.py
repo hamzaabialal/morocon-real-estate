@@ -29,13 +29,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='property',
             name='short_code',
-            field=models.CharField(blank=True, db_index=True, default="", help_text="Public short URL slug — auto-derived from the property's UUID.", max_length=12),
+            field=models.CharField(blank=True, default="", help_text="Public short URL slug — auto-derived from the property's UUID.", max_length=12),
             preserve_default=False,
         ),
         migrations.RunPython(backfill_short_codes, noop_reverse),
         migrations.AlterField(
             model_name='property',
             name='short_code',
-            field=models.CharField(blank=True, db_index=True, help_text="Public short URL slug — auto-derived from the property's UUID.", max_length=12, unique=True),
+            field=models.CharField(blank=True, help_text="Public short URL slug — auto-derived from the property's UUID.", max_length=12, unique=True),
         ),
     ]

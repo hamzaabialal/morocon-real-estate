@@ -182,7 +182,6 @@ class Property(models.Model):
         max_length=12,
         unique=True,
         blank=True,
-        db_index=True,
         help_text="Public short URL slug — auto-derived from the property's UUID.",
     )
 
