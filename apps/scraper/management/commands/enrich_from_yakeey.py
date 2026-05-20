@@ -132,52 +132,113 @@ def fix_text_value(value: Any) -> Any:
 
 def enrich_row(row) -> tuple[str | None, Any]:
     city = normalize_city(text_value(row, ["city", "mainCity", "mainInternalAddress_city"]))
-    neighborhood = normalize_text(
-        text_value(row, ["neighborhood", "mainNeighborhood", "mainInternalAddress_neighborhood"])
+    neighborhoods = normalized_values(
+        row,
+        [
+            "neighborhood",
+            "mainNeighborhood",
+            "mainInternalAddress_neighborhood",
+            "district",
+            "mainInternalAddress_district",
+            "mainAddress",
+        ],
     )
     property_type = normalize_yakeey_property_type(
         text_value(row, ["type", "propertyType", "property_type"])
     )
-    area = decimal_value(row_value(row, ["area", "listingArea", "builtArea"]))
-    price = decimal_value(row_value(row, ["globalPrice", "price", "priceDetails_salePrice"]))
+    areas = decimal_values(row, ["area", "listingArea", "builtArea"])
+    prices = decimal_values(
+        row,
+        [
+            "globalPrice",
+            "priceDetails_salePrice",
+            "priceDetails_sellerPrice",
+            "priceDetails_totalPrice",
+            "price",
+        ],
+    )
 
-    if not city or not neighborhood or not property_type or area is None or price is None:
+    if not city or not neighborhoods or not areas:
         return None, None
 
     candidates = Property.objects.filter(
         city__name__iexact=city,
-        neighborhood__name__iexact=neighborhood,
-        property_type__iexact=property_type,
     ).select_related("city", "neighborhood")
 
     best_match = None
-    best_score = 0
+    best_confidence = None
+    best_score = Decimal("-1")
     for prop in candidates.iterator():
-        score = match_score(prop, city, neighborhood, property_type, area, price)
+        confidence = match_confidence(
+            prop,
+            city,
+            neighborhoods,
+            property_type,
+            areas,
+            prices,
+        )
+        if confidence is None:
+            continue
+        score = candidate_score(prop, areas, prices)
         if score > best_score:
             best_match = prop
+            best_confidence = confidence
             best_score = score
 
-    if best_match is None or best_score < 4:
+    if best_match is None or best_confidence is None:
         return None, None
 
-    confidence = "HIGH" if best_score == 5 else "MEDIUM"
-    apply_enrichment(best_match, row, confidence)
-    return confidence, best_match.pk
+    apply_enrichment(best_match, row, best_confidence)
+    return best_confidence, best_match.pk
 
 
-def match_score(prop: Property, city: str, neighborhood: str, property_type: str, area: Decimal, price: Decimal) -> int:
-    score = 0
-    if prop.city and prop.city.name.lower() == city.lower():
-        score += 1
-    if prop.neighborhood and prop.neighborhood.name.lower() == neighborhood.lower():
-        score += 1
-    if prop.property_type.lower() == property_type.lower():
-        score += 1
-    if within_percent(prop.area, area, Decimal("0.03")):
-        score += 1
-    if within_percent(prop.price, price, Decimal("0.05")):
-        score += 1
+def match_confidence(
+    prop: Property,
+    city: str,
+    neighborhoods: set[str],
+    property_type: str,
+    areas: list[Decimal],
+    prices: list[Decimal],
+) -> str | None:
+    if not prop.city or prop.city.name.lower() != city.lower():
+        return None
+    prop_neighborhood = normalize_text(prop.neighborhood.name if prop.neighborhood else "")
+    if not prop_neighborhood or prop_neighborhood.lower() not in neighborhoods:
+        return None
+    if not any(within_percent(prop.area, area, Decimal("0.05")) for area in areas):
+        return None
+
+    prop_price = decimal_value(prop.price)
+    if prop_price not in (None, Decimal("0.00")):
+        usable_prices = [price for price in prices if price not in (None, Decimal("0.00"))]
+        if not usable_prices:
+            return None
+        if not any(within_percent(prop_price, price, Decimal("0.10")) for price in usable_prices):
+            return None
+
+    prop_type = normalize_text(prop.property_type).lower()
+    row_type = normalize_text(property_type).lower()
+    if prop_type and row_type and prop_type == row_type:
+        return "HIGH"
+    return "MEDIUM"
+
+
+def candidate_score(prop: Property, areas: list[Decimal], prices: list[Decimal]) -> Decimal:
+    prop_area = decimal_value(prop.area) or Decimal("0.00")
+    area_delta = min(
+        (abs(prop_area - area) / area for area in areas if area),
+        default=Decimal("1.00"),
+    )
+    score = Decimal("1.00") - area_delta
+
+    prop_price = decimal_value(prop.price)
+    usable_prices = [price for price in prices if price not in (None, Decimal("0.00"))]
+    if prop_price not in (None, Decimal("0.00")) and usable_prices:
+        price_delta = min(
+            (abs(prop_price - price) / price for price in usable_prices if price),
+            default=Decimal("1.00"),
+        )
+        score += Decimal("1.00") - price_delta
     return score
 
 
@@ -220,6 +281,26 @@ def text_value(row, columns: list[str]) -> str:
     if value is None:
         return ""
     return str(value).strip()
+
+
+def normalized_values(row, columns: list[str]) -> set[str]:
+    values = set()
+    for column in columns:
+        value = row_value(row, [column])
+        if value is not None:
+            normalized = normalize_text(str(value)).lower()
+            if normalized:
+                values.add(normalized)
+    return values
+
+
+def decimal_values(row, columns: list[str]) -> list[Decimal]:
+    values = []
+    for column in columns:
+        value = decimal_value(row_value(row, [column]))
+        if value is not None:
+            values.append(value)
+    return values
 
 
 def is_missing(value: Any) -> bool:
